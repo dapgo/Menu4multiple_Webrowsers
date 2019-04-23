@@ -1,6 +1,8 @@
 # Menu_Launcher4multiple_FF
 A Menu launcher for all your FireFox browsers, allowing to share a common profile folder among different Firefox webbrowser (Basilisk, FF,Waterfox, etc..)
 
+ ![icon](screenshots/Menu_option_basilisk.png)
+
 This Menu solution enables you to:
 - run a different browser when a web page is not loading/ working properly
 - use Firefox sync on an older Basilisk version
