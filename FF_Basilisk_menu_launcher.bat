@@ -1,5 +1,5 @@
 @echo OFF
-SET VERSION=1.02 
+SET VERSION=1.04 
 rem  --------------------------
 rem https://github.com/dapgo/Menu_Launcher4multiple_FF
 rem  --------------------------
@@ -29,7 +29,7 @@ SET PROFILE1=C:\Users\danielp\AppData\Roaming\Moonchild Productions\Basilisk\Pro
 
 SET NAME2=PC1 - Drive C: (folder: Portables\BasiliskBrowsers)
 SET PATH2=C:\Daniel\APPS\BasiliskBrowsers
-SET PROFILE2=C:\Daniel\APPS\BasiliskBrowsers\Profiles\5sq5azxp.default
+SET PROFILE2=C:\Daniel\APPS\BasiliskBrowsers\Profiles\3sq5azxp.default
 
 SET NAME3=PC2 - Drive D: (folder: Portables\BasiliskBrowsers)
 SET PATH3=D:\20 Portables\BasiliskBrowsers 
@@ -45,11 +45,15 @@ SET NAME5=USB PenDrive - Drive G: (folder: Portables\BasiliskBrowsers)
 SET PATH5=G:\Portables\BasiliskBrowsers 
 SET PROFILE5=G:\Portables\BasiliskBrowsers\Profiles\3sq5azxp.default
 
+SET NAME6=USB PenDrive - Drive G: (folder: Portables\PalemoonBrowsers)
+SET PATH6=G:\Portables\PalemoonBrowsers 
+SET PROFILE6=G:\Portables\PalemoonBrowsers\Profiles\palemoon.default
 
 :MAINMENU
 ECHO ************************************************************************************  
-ECHO ***********        BATCH MENU for Firefox/Basilisk       ***************************
-ECHO ***********     v %VERSION% (by DaPGo2019) - GPL         **********************************
+ECHO ***********        BATCH MENU for Firefox Browsers       ***************************
+ECHO ***********  Focused in FF Legacy/Basilisk/Waterfox/Palemoon  **********************
+ECHO ***********          v %VERSION% (by DaPGo2019) - GPL        ***************************
 ECHO ***********   https://github.com/dapgo/Menu_Launcher4multiple_FF      **************
 ECHO ************************************************************************************
  rem ECHO/ white line remove if it fails
@@ -70,42 +74,49 @@ ECHO 2) %NAME2%
 ECHO 3) %NAME3% 
 ECHO 4) %NAME4% 
 ECHO 5) %NAME5% 
-ECHO 6) HELP/INFO
-CHOICE /C 123456 /M "Choose an option:"
+ECHO 6) %NAME6% 
+ECHO 7) HELP/INFO
+CHOICE /C 1234567 /M "Choose an option:"
 ECHO/ 
 IF %ERRORLEVEL% == 1 GOTO Path1
 IF %ERRORLEVEL% == 2 GOTO Path2
 IF %ERRORLEVEL% == 3 GOTO Path3
 IF %ERRORLEVEL% == 4 GOTO Path4
 IF %ERRORLEVEL% == 5 GOTO Path5
-IF %ERRORLEVEL% == 6 GOTO HELP
+IF %ERRORLEVEL% == 6 GOTO Path6
+IF %ERRORLEVEL% == 7 GOTO HELP
 GOTO SECTION1
 
 :Path1
- ECHO %NAME1% (HP laptop)
+ ECHO (HP laptop)
  SET BROWSERPATH=%PATH1%
  SET PROFILEPATH=%PROFILE1%
  GOTO SECTION2
 :Path2	
-  ECHO %NAME2% (HP laptop)
+  ECHO (HP laptop)
  SET BROWSERPATH=%PATH2%
  SET PROFILEPATH=%PROFILE2%
  GOTO SECTION2
 :Path3	
- ECHO %NAME3% (Lenovo laptop)
+ ECHO (Lenovo laptop)
  SET BROWSERPATH=%PATH3%
  SET PROFILEPATH=%PROFILE3%
  GOTO SECTION2
 :Path4	
- ECHO %NAME4% (Lenovo laptop) Waterfox loading a Basilisk profile (be careful and do not update addons)
+ ECHO (Lenovo laptop) Waterfox with a Basilisk profile (be careful and do not update addons)
  SET BROWSERPATH=%PATH4%
  SET PROFILEPATH=%PROFILE4%
  GOTO SECTION2
 :Path5	
- ECHO %NAME5% (From a USB memory)
+ ECHO (Any computer from a USB memory)
  SET BROWSERPATH=%PATH5%
  SET PROFILEPATH=%PROFILE5%
  GOTO SECTION2  
+:Path6	
+ ECHO (Any computer from USB memory)
+ SET BROWSERPATH=%PATH6%
+ SET PROFILEPATH=%PROFILE6%
+ GOTO SECTION2
 :HELP		
     ECHO/ 
 	ECHO **********************************************************************
@@ -138,6 +149,8 @@ GOTO SECTION1
   ECHO Profile4 %PROFILE4%
   ECHO Path5 %PATH5%
   ECHO Profile5 %PROFILE5%
+  ECHO Path6 %PATH6%
+  ECHO Profile6 %PROFILE6%
   ECHO/
   ECHO #For additional info, latest version or submit bugs:	
   ECHO https://github.com/dapgo/Menu_Launcher4multiple_FF
@@ -162,17 +175,21 @@ ECHO ***********   SELECT a WebBrowser           **************
 ECHO **********************************************************
 ECHO/
 ECHO 1) Basilisk2019 
-ECHO 2) Basilisk2018 SYNC 
-ECHO 3) Serpent_win32_2019 
-ECHO 4) Centaury32b 
-ECHO 5) Waterfox+Basilisk(profile)(be careful)
-CHOICE /C 12345 /M "Choose an option:"
+ECHO 2) Basilisk2018 (FF SYNC)
+ECHO 3) Serpent_win32_2019 (Basilisk fork for winxp)
+ECHO 4) Centaury32b (Basilisk fork for winxp)
+ECHO 5) Waterfox (with Basilisk profile)(be careful)
+ECHO 6) Palemoon28
+ECHO 7) MyPal(Palemoon fork for winxp)
+CHOICE /C 1234567 /M "Choose an option:"
 ECHO/ 
 IF %ERRORLEVEL% == 1 GOTO basilisk
 IF %ERRORLEVEL% == 2 GOTO basilisksync
 IF %ERRORLEVEL% == 3 GOTO serpent_win32
 IF %ERRORLEVEL% == 4 GOTO centaury32b
 IF %ERRORLEVEL% == 5 GOTO Waterfox+Basilisk(profile)
+IF %ERRORLEVEL% == 6 GOTO Palemoon
+IF %ERRORLEVEL% == 7 GOTO Mypal
 GOTO FIN
 
 :basilisk
@@ -209,6 +226,21 @@ GOTO FIN
  CD
  CMD /K waterfox.exe -no-remote -profile "%PROFILEPATH%"			
  GOTO FIN	
+ 
+:Palemoon
+ ECHO Palemoon
+ CD /D "%BROWSERPATH%\"
+ CD
+ CMD /K palemoon.exe -no-remote -profile "%PROFILEPATH%"			
+ GOTO FIN 
+ 
+:Mypal
+ ECHO Mypal (Palemoon fork for winxp)
+ CD /D "%BROWSERPATH%\"
+ CD
+ CMD /K palemoon.exe -no-remote -profile "%PROFILEPATH%"			
+ GOTO FIN  
+ 
  
 :FIN				
 ECHO You can close this window				
