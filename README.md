@@ -1,16 +1,19 @@
 # Menu_Launcher4multiple_FF
-A Menu launcher for all your FireFox browsers, allowing to share a common profile folder among different Firefox webbrowser (Basilisk, FF,Waterfox, etc..)
+A Menu launcher for all your FireFox browsers, allowing to share a common profile folder among different Firefox webbrowser (Basilisk, FF56, Waterfox, Basilisk forks) or (Palemoon, FF27, PM forks)
 
  ![icon](screenshots/Menu_option_basilisk.png)
 
 This Menu solution enables you to:
+- have centralized menu to open all your webbrowsers
 - run a different browser when a web page is not loading/ working properly
-- use Firefox sync on an older Basilisk version
-- test a new version of your favorite browser without replacing your "stable" version
+- use Firefox sync on Basilisk (using a 2018 version)
+- test a new version of a webbrowser without replacing your "stable" version
 - run a win32 fork in your older computer with WinXP but keeping your current profile
 
 Real and useful scenarios:
 - Do a FF sync with Basilisk2018 but keep as your main browser an updated Basilisk2019(Palemoon Sync)
 - Run Waterfox on a webpage which is not loading properly with Basilisk.
-- Run Serpent/Centaury on your WindowsXP 32bits or ReactOS but keep as your main browser an updated Basilisk2019
-- Run MyPal on your WindowsXP 32bits or ReactOS but keep as your main browser an updated Palemoon
+- Run Serpent/Centaury (Basilisk forks) on your WindowsXP 32bits or ReactOS but keep as your main browser an updated Basilisk2019
+- Run MyPal (PM fork) on your WindowsXP 32bits or ReactOS but keep as your main browser an updated Palemoon
+
+![icon](screenshots/Menu_Help_screen.png)
