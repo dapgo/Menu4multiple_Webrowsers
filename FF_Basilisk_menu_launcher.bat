@@ -125,7 +125,7 @@ GOTO SECTION1
 	ECHO **********************************************************************
  rem ECHO/ white line remove if it fails
   ECHO/
-  ECHO Default Profile folder name is dynamic and change among browsers/computers, c
+  ECHO The default Profile folder name is dynamic and change for each browser/computer, can be renamed when using from Menu/Command line
   ECHO #tip1: To avoid problems caused by incompatible extensions/add-ins 
   ECHO Share a profile folder among webbrowsers based in same or similar Firefox version
   ECHO #tip2: Disable Addin automatic updates 
@@ -133,10 +133,10 @@ GOTO SECTION1
   ECHO #tip3: Update Addins always from your main browser
   ECHO/
   ECHO #Info about FF extension compatibility
-  ECHO Compatible FF52 Addins browsers: Basilisk, FF52, Centaury, Serpent, ..
+  ECHO Compatible FF27 Addins browsers: Palemoon27,28, FF27, Mypal, Palemoon forks, Basilisk!
+  ECHO Compatible FF52 Addins browsers: Basilisk, FF52, Centaury, Serpent, Waterfox! ..
   ECHO Compatible FF56 Addins browsers: Waterfox, FF56, ..
-  ECHO Compatible FF27 Addins browsers: Palemoon27,28, FF27, Mypal, Palemoon fork
-  ECHO Compatible FF Quantum Addins browsers: FF57, FF>57, Waterfox
+  ECHO Compatible FF Quantum Addins browsers: FF57, FF>57, Waterfox!
   ECHO/
   ECHO #Predefined paths at Menu Script:  
   ECHO Path1 %PATH1%
