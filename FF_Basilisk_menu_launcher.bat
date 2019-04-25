@@ -1,4 +1,5 @@
 @echo OFF
+SET VERSION=1.02 
 rem  --------------------------
 rem https://github.com/dapgo/Menu_Launcher4multiple_FF
 rem  --------------------------
@@ -21,26 +22,34 @@ rem
 rem  ----------------------------------------------------
 rem                SECTION 0 - Path Declaration
 rem  ----------------------------------------------------
-SET NAME1=Drive D: (folder: Portables\BasiliskBrowsers)
-SET PATH1=D:\20 Portables\BasiliskBrowsers 
-SET PROFILE1=D:\20 Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
+SET NAME1=PC1 - Drive C: (default Basilisk at \Program Files and \Roaming\Moonchild Productions\)
+SET PATH1=C:\Program Files\Basilisk\
+SET PROFILE1=C:\Users\danielp\AppData\Roaming\Moonchild Productions\Basilisk\Profiles\7jgwm62d.default
 
-SET NAME2=Drive C: (folder: Portables\BasiliskBrowsers)
-SET PATH2=C:\daniel\Portables\BasiliskBrowsers
-SET PROFILE2=C:\daniel\Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
 
-SET NAME3=Drive C (default Basilisk at Roaming\Moonchild Productions\)
-SET PATH3=c:\Users\myusername\Documents\Basilisk
-SET PROFILE3=c:\Users\myusername\AppData\Roaming\Moonchild Productions\Basilisk\Profiles\5sq5azxp.default
+SET NAME2=PC1 - Drive C: (folder: Portables\BasiliskBrowsers)
+SET PATH2=C:\Daniel\APPS\BasiliskBrowsers
+SET PROFILE2=C:\Daniel\APPS\BasiliskBrowsers\Profiles\5sq5azxp.default
 
-SET NAME4=WaterFox+Basilisk(profile at D:)
+SET NAME3=PC2 - Drive D: (folder: Portables\BasiliskBrowsers)
+SET PATH3=D:\20 Portables\BasiliskBrowsers 
+SET PROFILE3=D:\20 Portables\BasiliskBrowsers\Profiles\3sq5azxp.default
+
+
+SET NAME4=PC2 -D:  WaterFox+Basilisk profile (folder: Portables\BasiliskBrowsers)
 SET PATH4=D:\20 Portables\WaterfoxPortable56.2.7\App\Waterfox\
-SET PROFILE4=D:\20 Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
+SET PROFILE4=D:\20 Portables\BasiliskBrowsers\Profiles\3sq5azxp.default
+
+
+SET NAME5=USB PenDrive - Drive G: (folder: Portables\BasiliskBrowsers)
+SET PATH5=G:\Portables\BasiliskBrowsers 
+SET PROFILE5=G:\Portables\BasiliskBrowsers\Profiles\3sq5azxp.default
+
 
 :MAINMENU
 ECHO ************************************************************************************  
 ECHO ***********        BATCH MENU for Firefox/Basilisk       ***************************
-ECHO ***********     v1.0 (by DaPGo2019) - GPL         **********************************
+ECHO ***********     v %VERSION% (by DaPGo2019) - GPL         **********************************
 ECHO ***********   https://github.com/dapgo/Menu_Launcher4multiple_FF      **************
 ECHO ************************************************************************************
  rem ECHO/ white line remove if it fails
@@ -53,45 +62,50 @@ rem  ----------------------------------------------------
 rem                SECTION1 - Root folder and PROFILE folder
 rem  ----------------------------------------------------
 ECHO ********************************************************************
-ECHO ***********   SELECT a PATH/DRIVE for app/profile     **************
+ECHO ***********   SELECT a PATH/DRIVE for Exe/Profile     **************
 ECHO ***********   Help for more info and predefined paths  *************
 ECHO ********************************************************************
-ECHO 1)%NAME1% 
-ECHO 2)%NAME2% 
-ECHO 3)%NAME3% 
-ECHO 4)%NAME4% 
-ECHO 5)HELP/INFO
-CHOICE /C 12345 /M "Choose an option "
+ECHO 1) %NAME1% 
+ECHO 2) %NAME2% 
+ECHO 3) %NAME3% 
+ECHO 4) %NAME4% 
+ECHO 5) %NAME5% 
+ECHO 6) HELP/INFO
+CHOICE /C 123456 /M "Choose an option:"
+ECHO/ 
 IF %ERRORLEVEL% == 1 GOTO Path1
 IF %ERRORLEVEL% == 2 GOTO Path2
 IF %ERRORLEVEL% == 3 GOTO Path3
 IF %ERRORLEVEL% == 4 GOTO Path4
-IF %ERRORLEVEL% == 5 GOTO HELP
+IF %ERRORLEVEL% == 5 GOTO Path5
+IF %ERRORLEVEL% == 6 GOTO HELP
 GOTO SECTION1
 
 :Path1
- ECHO %NAME1% (Lenovo)
+ ECHO %NAME1% (HP laptop)
  SET BROWSERPATH=%PATH1%
  SET PROFILEPATH=%PROFILE1%
  GOTO SECTION2
-
 :Path2	
   ECHO %NAME2% (HP laptop)
  SET BROWSERPATH=%PATH2%
  SET PROFILEPATH=%PROFILE2%
  GOTO SECTION2
-  
 :Path3	
- ECHO %NAME3%
+ ECHO %NAME3% (Lenovo laptop)
  SET BROWSERPATH=%PATH3%
  SET PROFILEPATH=%PROFILE3%
  GOTO SECTION2
 :Path4	
- ECHO %NAME4% Waterfox loading a Basilisk profile (be careful and do not update addons)
+ ECHO %NAME4% (Lenovo laptop) Waterfox loading a Basilisk profile (be careful and do not update addons)
  SET BROWSERPATH=%PATH4%
  SET PROFILEPATH=%PROFILE4%
  GOTO SECTION2
-  
+:Path5	
+ ECHO %NAME5% (From a USB memory)
+ SET BROWSERPATH=%PATH5%
+ SET PROFILEPATH=%PROFILE5%
+ GOTO SECTION2  
 :HELP		
     ECHO/ 
 	ECHO **********************************************************************
@@ -99,7 +113,8 @@ GOTO SECTION1
 	ECHO ***********      Information, tips, about          *******************
 	ECHO **********************************************************************
  rem ECHO/ white line remove if it fails
-  ECHO/ 
+  ECHO/
+  ECHO Default Profile folder name is dynamic and change among browsers/computers, c
   ECHO #tip1: To avoid problems caused by incompatible extensions/add-ins 
   ECHO Share a profile folder among webbrowsers based in same or similar Firefox version
   ECHO #tip2: Disable Addin automatic updates 
@@ -121,6 +136,8 @@ GOTO SECTION1
   ECHO Profile3 %PROFILE3%
   ECHO Path4 %PATH4%
   ECHO Profile4 %PROFILE4%
+  ECHO Path5 %PATH5%
+  ECHO Profile5 %PROFILE5%
   ECHO/
   ECHO #For additional info, latest version or submit bugs:	
   ECHO https://github.com/dapgo/Menu_Launcher4multiple_FF
@@ -132,7 +149,8 @@ GOTO SECTION1
 
 
 :SECTION2
-ECHO You chose %BROWSERPATH%, %PROFILEPATH%
+ECHO Root (exe): %BROWSERPATH% 
+ECHO Complete Profile path: %PROFILEPATH%
 
 rem  ----------------------------------------------------
 rem                SECTION2 - Executable folder and filename 
@@ -148,7 +166,8 @@ ECHO 2) Basilisk2018 SYNC
 ECHO 3) Serpent_win32_2019 
 ECHO 4) Centaury32b 
 ECHO 5) Waterfox+Basilisk(profile)(be careful)
-CHOICE /C 12345 /M ""
+CHOICE /C 12345 /M "Choose an option:"
+ECHO/ 
 IF %ERRORLEVEL% == 1 GOTO basilisk
 IF %ERRORLEVEL% == 2 GOTO basilisksync
 IF %ERRORLEVEL% == 3 GOTO serpent_win32
