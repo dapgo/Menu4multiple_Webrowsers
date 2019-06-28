@@ -1,8 +1,11 @@
 @echo OFF
-SET VERSION=1.04 
+SET VERSION=1.51
 rem  --------------------------
 rem https://github.com/dapgo/Menu_Launcher4multiple_FF
 rem  --------------------------
+rem 1st menu to identify paths for common/shared (profile)
+rem 2nd menu to identify a specific Webbrowser and its bin path (can use shared profiles)
+rem
 rem Notes I renamed the executable files with NO_use_EXE_ to avoid launching the .exe without profile argument.
 rem Intructions/sections to fill
 rem 1 For new computer or change of folder
@@ -14,40 +17,55 @@ rem 2.1 Create a new ERRORLEVEL section for the new webbrowser
 rem 2.2 rename executable folder and filename.exe
 rem  --------------------------
 rem ------ My notes/Information
-rem Basilisk default folder -profile "c:\Users\username\AppData\Roaming\Moonchild Productions\Basilisk\Profiles\5sq5azxp.default
+rem Basilisk default folder: -profile "c:\Users\username\AppData\Roaming\Moonchild Productions\Basilisk\Profiles\5sq5azxp.default
+rem
+rem if path has not spaces inside do not quote variable %PROFILEPATH% it can fail (WF)
 rem 
+rem Portable.exe doesn't support profile parameters :  -no-remote -profile
+rem
 rem note that  ECHO/ for newline is not an official instruction, so remove it fails.
+rem be careful, do not add  slash at the end of paths
 rem 
+rem PEND!!!  add 1st menu profile, 2nd menu browser, limit combination of profile and browser
 
 rem  ----------------------------------------------------
 rem                SECTION 0 - Path Declaration
 rem  ----------------------------------------------------
 SET NAME1=PC1 - Drive C: (default Basilisk at \Program Files and \Roaming\Moonchild Productions\)
-SET PATH1=C:\Program Files\Basilisk\
+SET PATH1=C:\Program Files\Basilisk
 SET PROFILE1=C:\Users\danielp\AppData\Roaming\Moonchild Productions\Basilisk\Profiles\7jgwm62d.default
 
 
-SET NAME2=PC1 - Drive C: (folder: Portables\BasiliskBrowsers)
-SET PATH2=C:\Daniel\APPS\BasiliskBrowsers
-SET PROFILE2=C:\Daniel\APPS\BasiliskBrowsers\Profiles\3sq5azxp.default
-
-SET NAME3=PC2 - Drive D: (folder: Portables\BasiliskBrowsers)
-SET PATH3=D:\20 Portables\BasiliskBrowsers 
-SET PROFILE3=D:\20 Portables\BasiliskBrowsers\Profiles\3sq5azxp.default
-
-
-SET NAME4=PC2 -D:  WaterFox+Basilisk profile (folder: Portables\BasiliskBrowsers)
-SET PATH4=D:\20 Portables\WaterfoxPortable56.2.7\App\Waterfox\
-SET PROFILE4=D:\20 Portables\BasiliskBrowsers\Profiles\3sq5azxp.default
+SET NAME2=Drive C: (folder: Portables\BasiliskBrowsers)
+REM =PC2 - Drive D: (folder: Portables\BasiliskBrowsers)
+SET PATH2=C:\Daniel\Portables\BasiliskBrowsers
+REM D:\20 Portables\BasiliskBrowsers 
+SET PROFILE2=C:\Daniel\Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
+REM D:\20 Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
 
 
-SET NAME5=USB PenDrive - Drive G: (folder: Portables\BasiliskBrowsers)
-SET PATH5=G:\Portables\BasiliskBrowsers 
-SET PROFILE5=G:\Portables\BasiliskBrowsers\Profiles\3sq5azxp.default
+SET NAME3=Drive C: (folder: Portables\PalemoonBrowsers)
+SET PATH3=C:\Daniel\Portables\PalemoonBrowsers
+SET PROFILE3=C:\Daniel\Portables\PalemoonBrowsers\Profiles\Default
 
-SET NAME6=USB PenDrive - Drive G: (folder: Portables\PalemoonBrowsers)
-SET PATH6=G:\Portables\PalemoonBrowsers 
-SET PROFILE6=G:\Portables\PalemoonBrowsers\Profiles\palemoon.default
+SET NAME4= !! Mix browsers(prev backup) - Basilisk profile+WF bin (folder: Portables\xxxx)
+SET PATH4=C:\Daniel\Portables\Waterfox_browsers
+REM \WaterfoxPortable56.2.7\App\Waterfox
+SET PROFILE4=C:\Daniel\Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
+
+SET NAME5=Drive C: (folder: Portables\Waterfox_browsers)
+SET PATH5=C:\Daniel\Portables\Waterfox_browsers
+SET PROFILE5=C:\Daniel\Portables\Waterfox_browsers\profile					 
+REM DEFAULT profile path
+REM SET PROFILE5=C:\Daniel\Portables\Waterfox_browsers\WaterfoxPortable56.2.7\Data\profile
+
+SET NAME6=USB PenDrive - Drive G: (folder: Portables\BasiliskBrowsers)
+SET PATH6=G:\Portables\BasiliskBrowsers 
+SET PROFILE6=G:\Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
+
+SET NAME7=USB PenDrive - Drive G: (folder: Portables\PalemoonBrowsers)
+SET PATH7=G:\Portables\PalemoonBrowsers 
+SET PROFILE7=G:\Portables\PalemoonBrowsers\Profiles\palemoon.default
 
 :MAINMENU
 ECHO ************************************************************************************  
@@ -66,7 +84,8 @@ rem  ----------------------------------------------------
 rem                SECTION1 - Root folder and PROFILE folder
 rem  ----------------------------------------------------
 ECHO ********************************************************************
-ECHO ***********   SELECT a PATH/DRIVE for Exe/Profile     **************
+ECHO ***********         Menu1: SELECT a PATH/DRIVE        **************
+ECHO ***********       for Profile(data)/ browser family    *************
 ECHO ***********   Help for more info and predefined paths  *************
 ECHO ********************************************************************
 ECHO 1) %NAME1% 
@@ -75,8 +94,9 @@ ECHO 3) %NAME3%
 ECHO 4) %NAME4% 
 ECHO 5) %NAME5% 
 ECHO 6) %NAME6% 
-ECHO 7) HELP/INFO
-CHOICE /C 1234567 /M "Choose an option:"
+ECHO 7) %NAME7% 
+ECHO 8) HELP/INFO
+CHOICE /C 12345678 /M "Choose an option:"
 ECHO/ 
 IF %ERRORLEVEL% == 1 GOTO Path1
 IF %ERRORLEVEL% == 2 GOTO Path2
@@ -84,21 +104,22 @@ IF %ERRORLEVEL% == 3 GOTO Path3
 IF %ERRORLEVEL% == 4 GOTO Path4
 IF %ERRORLEVEL% == 5 GOTO Path5
 IF %ERRORLEVEL% == 6 GOTO Path6
-IF %ERRORLEVEL% == 7 GOTO HELP
+IF %ERRORLEVEL% == 7 GOTO Path7
+IF %ERRORLEVEL% == 8 GOTO HELP
 GOTO SECTION1
 
 :Path1
- ECHO (HP laptop)
+ ECHO (DRIVE C laptop)
  SET BROWSERPATH=%PATH1%
  SET PROFILEPATH=%PROFILE1%
  GOTO SECTION2
 :Path2	
-  ECHO (HP laptop)
+  ECHO (DRIVE C )
  SET BROWSERPATH=%PATH2%
  SET PROFILEPATH=%PROFILE2%
  GOTO SECTION2
 :Path3	
- ECHO (Lenovo laptop)
+ ECHO (DRIVE C )
  SET BROWSERPATH=%PATH3%
  SET PROFILEPATH=%PROFILE3%
  GOTO SECTION2
@@ -108,14 +129,20 @@ GOTO SECTION1
  SET PROFILEPATH=%PROFILE4%
  GOTO SECTION2
 :Path5	
- ECHO (Any computer from a USB memory)
+ ECHO (Lenovo laptop) WaterfoxNew with previousWF profile
  SET BROWSERPATH=%PATH5%
  SET PROFILEPATH=%PROFILE5%
- GOTO SECTION2  
+ GOTO SECTION2 
+ 
 :Path6	
- ECHO (Any computer from USB memory)
+ ECHO (Any computer from a USB memory)
  SET BROWSERPATH=%PATH6%
  SET PROFILEPATH=%PROFILE6%
+ GOTO SECTION2  
+:Path7	
+ ECHO (Any computer from USB memory)
+ SET BROWSERPATH=%PATH7%
+ SET PROFILEPATH=%PROFILE7%
  GOTO SECTION2
 :HELP		
     ECHO/ 
@@ -126,6 +153,7 @@ GOTO SECTION1
  rem ECHO/ white line remove if it fails
   ECHO/
   ECHO The default Profile folder name is dynamic and change for each browser/computer, can be renamed when using from Menu/Command line
+  ECHO When a common Profile folder is stored at different PCs, changes on both PCs will disalign profile, sync frequently (copy paste after changes)																																				 
   ECHO #tip1: To avoid problems caused by incompatible extensions/add-ins 
   ECHO Share a profile folder among webbrowsers based in same or similar Firefox version
   ECHO #tip2: Disable Addin automatic updates 
@@ -138,6 +166,25 @@ GOTO SECTION1
   ECHO Compatible FF56 Addins browsers: Waterfox, FF56, ..
   ECHO Compatible FF Quantum Addins browsers: FF57, FF>57, Waterfox!
   ECHO/
+  PAUSE
+   ECHO/ 
+	ECHO **********************************************************************
+	ECHO ***********   	HELP: Browsers INFO    **************
+	ECHO **********************************************************************
+  ECHO/
+  ECHO #Basilisk: 
+  ECHO Basilisk2018 Based FF52.9 Compatible (FFSync, MultiAccount container, webextensions)
+  ECHO Basilisk201906 Based FF52.9 0% Compatible webextensions  (PM sync)
+  ECHO #Waterfox:
+  ECHO Waterfox 56.2.10. Based FF56, Compatible with XUL and webextensions  
+  ECHO Waterfox Beta. Based FF68, Limited compatibility with XUL - webextensions  
+  ECHO #Palemoon:
+  ECHO Palemoon27. Based FF24,28  (FF sync)
+  ECHO Palemoon29. Based FF24,28  (PM sync)
+	ECHO **********************************************************************
+	ECHO ***********   	HELP: SCRIPT PATHS    **************
+	ECHO **********************************************************************
+  ECHO/
   ECHO #Predefined paths at Menu Script:  
   ECHO Path1 %PATH1%
   ECHO Profile1 %PROFILE1%
@@ -149,8 +196,10 @@ GOTO SECTION1
   ECHO Profile4 %PROFILE4%
   ECHO Path5 %PATH5%
   ECHO Profile5 %PROFILE5%
-  ECHO Path6 %PATH6%
+  ECHO Path6 %PATH6%  
   ECHO Profile6 %PROFILE6%
+  ECHO Path6 %PATH7%  
+  ECHO Profile6 %PROFILE7%  
   ECHO/
   ECHO #For additional info, latest version or submit bugs:	
   ECHO https://github.com/dapgo/Menu_Launcher4multiple_FF
@@ -170,31 +219,33 @@ rem                SECTION2 - Executable folder and filename
 rem  ----------------------------------------------------
 rem ECHO/ white line remove if it fails
 ECHO/ 
-ECHO **********************************************************
-ECHO ***********   SELECT a WebBrowser           **************
-ECHO **********************************************************
+ECHO ******************************************************************
+ECHO ***********  Menu2:   SELECT a WebBrowser version   **************
+ECHO ******************************************************************
 ECHO/
-ECHO 1) Basilisk2019 
+ECHO 1) Basilisk201906 
 ECHO 2) Basilisk2018 (FF SYNC)
 ECHO 3) Serpent_win32_2019 (Basilisk fork for winxp)
-ECHO 4) Centaury32b (Basilisk fork for winxp)
-ECHO 5) Waterfox (with Basilisk profile)(be careful)
-ECHO 6) Palemoon28
-ECHO 7) MyPal(Palemoon fork for winxp)
-CHOICE /C 1234567 /M "Choose an option:"
+ECHO 4) Centaury32b (Basilisk fork for winXP)
+ECHO 5) Waterfox 56.2.7 
+ECHO 6) Waterfox 56.2.10 (with WF profile)(be careful)
+ECHO 7) Palemoon29 (32bits)
+ECHO 8) MyPal(Palemoon fork for winXP)
+CHOICE /C 12345678 /M "Choose an option:"
 ECHO/ 
 IF %ERRORLEVEL% == 1 GOTO basilisk
 IF %ERRORLEVEL% == 2 GOTO basilisksync
 IF %ERRORLEVEL% == 3 GOTO serpent_win32
 IF %ERRORLEVEL% == 4 GOTO centaury32b
-IF %ERRORLEVEL% == 5 GOTO Waterfox+Basilisk(profile)
-IF %ERRORLEVEL% == 6 GOTO Palemoon
-IF %ERRORLEVEL% == 7 GOTO Mypal
+IF %ERRORLEVEL% == 5 GOTO waterfox_old
+IF %ERRORLEVEL% == 6 GOTO waterfox_new
+IF %ERRORLEVEL% == 7 GOTO Palemoon
+IF %ERRORLEVEL% == 8 GOTO Mypal
 GOTO FIN
 
 :basilisk
  ECHO Basilisk2019
- CD /D "%BROWSERPATH%\basilisk_2019\"
+ CD /D "%BROWSERPATH%\basilisk_201906\"
  CD
  cmd /K NO_use_EXE_basilisk.exe -no-remote -profile "%PROFILEPATH%"
  GOTO FIN				
@@ -220,18 +271,28 @@ GOTO FIN
  CMD /K NO_use_EXE_Centaury.exe -no-remote -profile "%PROFILEPATH%"			
  GOTO FIN	
  
-:waterfox				
+:waterfox_old
  ECHO Waterfox
- CD /D "%BROWSERPATH%\"
+CD /D "%BROWSERPATH%\WaterfoxPortable56.2.7\App\Waterfox\"
  CD
- CMD /K waterfox.exe -no-remote -profile "%PROFILEPATH%"			
+ CMD /K Waterfox.exe -no-remote -profile %PROFILEPATH%		
+ GOTO FIN	
+ 
+:waterfox_new				
+ ECHO WaterfoxNew
+ CD /D "%BROWSERPATH%\WaterfoxPortable56.2.10\App\Waterfox\"
+ CD
+ CMD /K Waterfox.exe -no-remote -profile %PROFILEPATH%
+ rem Manual path just for testing 
+ rem OK CMD /K Waterfox.exe -no-remote -profile C:\Daniel\Portables\Waterfox_browsers\profile
  GOTO FIN	
  
 :Palemoon
  ECHO Palemoon
- CD /D "%BROWSERPATH%\"
+ CD /D "%BROWSERPATH%\PM29_32b\Bin\Palemoon\"
  CD
- CMD /K palemoon.exe -no-remote -profile "%PROFILEPATH%"			
+ rem portable.exe doesn't support -no-remote -profile "%PROFILEPATH%"			
+ CMD /K palemoon.exe -no-remote -profile "%PROFILEPATH%"		
  GOTO FIN 
  
 :Mypal
