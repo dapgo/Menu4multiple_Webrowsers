@@ -1,6 +1,8 @@
 # Menu_Launcher4multiple_FF
 A Menu launcher for all your FireFox browsers, allowing to share a common profile folder among different Firefox webbrowser (Basilisk, FF56, Waterfox, Basilisk forks) or (Palemoon, FF27, PM forks)
 
+(Below screenshots are outdated, at the moment Menu is a bit better and nicer)
+
  ![icon](screenshots/Menu_option_basilisk.png)
 
 This Menu solution enables you to:
