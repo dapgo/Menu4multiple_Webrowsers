@@ -3,7 +3,7 @@ A Menu launcher for all your FireFox browsers, allowing to share a common profil
 
 (Below screenshots are outdated, at the moment Menu is a bit better and nicer)
 
- ![icon](screenshots/Menu_FF_v16.png)
+ ![icon](screenshots/Menu_FF_v18.png)
 
 This Menu solution enables you to:
 - have centralized menu to open all your webbrowsers
@@ -18,4 +18,4 @@ Real and useful scenarios:
 - Run Serpent/Centaury (Basilisk forks) on your WindowsXP 32bits or ReactOS but keep as your main browser an updated Basilisk2019
 - Run MyPal (PM fork) on your WindowsXP 32bits or ReactOS but keep as your main browser an updated Palemoon
 
-![icon](screenshots/Menu_FF_Help_page_v16.png)
+![icon](screenshots/FF_Menu1and2_blackbg_v18.png)
