@@ -3,8 +3,9 @@ A Menu launcher for all your FireFox browsers, allowing to share a common profil
 
 (Below screenshots are outdated, at the moment Menu is a bit better and nicer)
 
- ![icon](screenshots/FF_Menu1and2_blackbg_v18.png)
-
+ ![icon](screenshots/MenuFF_v188_menu1.png)
+ ![icon](screenshots/MenuFF_v188_menu2.png)
+ 
 This Menu solution enables you to:
 - have centralized menu to open all your webbrowsers
 - run a different browser when a web page is not loading/ working properly
