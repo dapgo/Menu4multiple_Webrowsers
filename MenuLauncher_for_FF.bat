@@ -1,6 +1,31 @@
 @echo OFF
-SET VERSION=1.88(201908)
-SET MODEDEBUG=N
+SET VERSION=1.93(201909)
+SET V_MODEDEBUG=N
+REM SET V_MODEDEBUG=Y 
+REM Debug and Verbose output mode
+SET V_VERBOSELIST=NO
+REM SET V_VERBOSELIST=ALL  
+REM ALL will list all browsers in MenuScreen2
+IF %V_MODEDEBUG% ==Y (  
+	ver 
+	wmic os get version
+	)
+
+rem findstr usign regexp not supported in Reactos
+ver | findstr /i "5\.0\." >nul && ( ECHO Windows2000 & SET VAR_OS=WINXP_W2003)
+ver | findstr /i "5\.1\." >nul && ( echo WindowsXP32bit & SET VAR_OS=WINXP_W2003) 
+ver | findstr /i "5\.2\." >nul && ( echo WindowsXP64b/WinServer2003 & SET VAR_OS=WINXP_W2003)
+ver | findstr /i "ReactOS" >nul && ( ECHO ReactOS/Windows & SET VAR_OS=REACTOS)
+ver | findstr /i "6\.0\." > nul && ( ECHO Windows Vista/Server2008 & SET VAR_OS=WIN7)
+ver | findstr /i "6.1." > nul && ( ECHO win7/Server2008R2 & SET VAR_OS=WIN7 )
+rem ver | findstr /i "6.1." > nul && ( SET VAR_OS=REACTOS )
+rem ver | findstr /i "6\.1\." > nul && (echo Windows 7 / Server 2008R2 & GOTO :WIN7)
+ver | findstr /i "6\.2\." > nul && (echo Windows8/Server2012 & SET VAR_OS=WIN7 )
+ver | findstr /i "6\.3\." > nul && (echo Windows8.1/Server2012R2 & SET VAR_OS=WIN7 )
+ver | findstr /i "10\.0\." > nul && (echo Windows10/Server2016 & SET VAR_OS=WIN7 )
+
+ECHO OS detected: %VAR_OS%
+
 rem  --------------------------
 rem https://github.com/dapgo/Menu_Launcher4multiple_FF
 rem  --------------------------
@@ -49,10 +74,15 @@ REM IF NOT EXIST C:\Daniel\Portables\Waterfox_browsers\WaterfoxPortable56.2.10\A
 REM ECHO %Folder1Exist%
 
 rem  ----------------------------------------------------
-rem                SECTION 0 - Path Declaration
+rem                SECTION 0 - Variables and Path Declaration
 rem  ----------------------------------------------------
 
 :MAINMENU
+
+SET V_FAMILY=%V_VERBOSELIST%
+REM SET V_FAMILY=ALL
+REM ALL will list all browsers in Menu
+REM NO or something else, will list only these browsers compatible with a specific family  
 CLS
 SET NAME1=FF52/Basilisk (C:  \Program Files + \Roaming\Moonchild Prod.)	.
 SET PATH1=C:\Program Files\Basilisk
@@ -88,7 +118,7 @@ REM SET PROFILE5=C:\Daniel\Portables\Waterfox_browsers\WaterfoxPortable56.2.7\Da
 
 SET NAME6=FF57/FirefoxQuantum (C: folder: Portables\QuantumBrowsers)		.
 SET PATH6=C:\Daniel\Portables\QuantumBrowsers
-SET PROFILE6=C:\Daniel\Portables\QuantumBrowsers\Profiles\0a3stydz.dev-edition-default
+SET PROFILE6=C:\Daniel\Portables\QuantumBrowsers\Profiles\1a9stydz.dev-default
 IF EXIST %PROFILE6% (SET Profile6Exist=[Y]) ELSE (SET Profile6Exist=[ ])
 
 SET NAME7=USB PenDrive - Drive G: (folder: Portables\PalemoonBrowsers)		.
@@ -100,6 +130,7 @@ SET NAME8=USB PenDrive - Drive G: (folder: Portables\BasiliskBrowsers)		.
 SET PATH8=G:\Portables\BasiliskBrowsers 
 SET PROFILE8=G:\Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
 IF EXIST %PROFILE8% (SET Profile8Exist=[Y]) ELSE (SET Profile8Exist=[ ])
+
 
 SET NAME9=ANY PORTABLE with its own portable folder				.
 rem SET PATH9=no need
@@ -113,15 +144,16 @@ ECHO " | |\/| |  _| |  \| | | | |  _____  | |_   | || |_) |  _| | |_ | | | \  / 
 ECHO " | |  | | |___| |\  | |_| | |_____| |  _|  | ||  _ <| |___|  _|| |_| /  \  "
 ECHO " |_|  |_|_____|_| \_|\___/          |_|   |___|_| \_|_____|_|   \___/_/\_\ "
 
-ECHO ******          v %VERSION%	 (by DaPGo) - GPL        *****************
+ECHO ******  v %VERSION%	 (by DaPGo) - GPL  - FullList: %V_FAMILY%	**************
 ECHO ******   https://github.com/dapgo/Menu_Launcher4multiple_FF      *********
 ECHO " _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____  "
 ECHO "|_____|_____|_____|_____|_____|_____|_____|_____|_____|_____|_____|_____| "
  rem ECHO/ white line remove if it fails
 
 ECHO OFF
-IF "%MODEDEBUG%" == "Y"  ( CD
-ver
+IF "%V_MODEDEBUG%" == "Y"  ( 
+   CD
+   ver
  )
 
 :SECTION1
@@ -148,7 +180,17 @@ ECHO 9) %NAME9%  [?]
 ECHO H/h) HELP/INFO
 ECHO Q/q) Quit/Exit
 ECHO/
-CHOICE /C 123456789HQ /M "Choose an option:"
+REM ###### CHOICE OS VARIANTS MENU1 ######
+IF %VAR_OS% == WIN7 ( 	
+	CHOICE /C 123456789HQ /M "Choose an option:"
+	)
+IF %VAR_OS% == REACTOS ( 	
+	CHOICE /C:123456789HQ "Choose an option:"
+)
+IF %VAR_OS% == WINXP_W2003 ( 	
+	CHOICE.COM /C:123456789HQ "Choose an option:"
+)
+	
 ECHO/ 
 IF %ERRORLEVEL% == 1 GOTO Path1
 IF %ERRORLEVEL% == 2 GOTO Path2
@@ -158,7 +200,7 @@ IF %ERRORLEVEL% == 5 GOTO Path5
 IF %ERRORLEVEL% == 6 GOTO Path6
 IF %ERRORLEVEL% == 7 GOTO Path7
 IF %ERRORLEVEL% == 8 GOTO Path8
-IF %ERRORLEVEL% == 9 GOTO SECTION2
+IF %ERRORLEVEL% == 9 GOTO Path9
 IF %ERRORLEVEL% == 10 GOTO HELP
 IF %ERRORLEVEL% == 11 GOTO FIN
 GOTO SECTION1
@@ -166,37 +208,50 @@ GOTO SECTION1
 :Path1 
  SET BROWSERPATH=%PATH1%
  SET PROFILEPATH=%PROFILE1%
+ IF NOT "%V_FAMILY%"=="ALL" SET V_FAMILY=52 
  GOTO SECTION2
+ 
 :Path2	  
  SET BROWSERPATH=%PATH2%
  SET PROFILEPATH=%PROFILE2%
+ IF NOT "%V_FAMILY%"=="ALL" SET V_FAMILY=52
  GOTO SECTION2
+ 
 :Path3	 
  SET BROWSERPATH=%PATH3%
  SET PROFILEPATH=%PROFILE3%
+ IF NOT "%V_FAMILY%"=="ALL" SET V_FAMILY=27
  GOTO SECTION2
 :Path4	 
  SET BROWSERPATH=%PATH4%
  SET PROFILEPATH=%PROFILE4%
+ IF NOT "%V_FAMILY%"=="ALL" SET V_FAMILY=56
  GOTO SECTION2
 :Path5	
  SET BROWSERPATH=%PATH5%
  SET PROFILEPATH=%PROFILE5%
+ IF NOT "%V_FAMILY%"=="ALL" SET V_FAMILY=56
  GOTO SECTION2 
  
 :Path6	
  SET BROWSERPATH=%PATH6%
  SET PROFILEPATH=%PROFILE6%
+ IF NOT "%V_FAMILY%"=="ALL" SET V_FAMILY=57
  GOTO SECTION2  
 :Path7	
  SET BROWSERPATH=%PATH7%
  SET PROFILEPATH=%PROFILE7%
+ IF NOT "%V_FAMILY%"=="ALL" SET V_FAMILY=27
  GOTO SECTION2
 :Path8	
  SET BROWSERPATH=%PATH8%
  SET PROFILEPATH=%PROFILE8%
+ IF NOT "%V_FAMILY%"=="ALL" SET "V_FAMILY=52
  GOTO SECTION2
  
+:Path9	 
+ IF NOT "%V_FAMILY%"=="ALL" SET "V_FAMILY=00
+ GOTO SECTION2 
  
 :HELP		
     CLS
@@ -235,15 +290,15 @@ GOTO SECTION1
 	ECHO **********************************************************************
   ECHO/
   ECHO #Basilisk code: 
-  ECHO Basilisk2018 Based FF52.9 Compatible with MozillaSync, SyncTabs, MultiAccount container, basic webext.)
-  ECHO Basilisk201906 Based FF52.9 No Compatible with webext. (PM sync)
-  ECHO Centaury/Basilisk Based FF52.9 Compat. webextension? (PM sync)
+  ECHO Basilisk2018 Based FF52.9 Compatible with MozillaSync, MultiAccount container, basic webext.)(UXP)
+  ECHO Basilisk201906 Based FF52.9 Incompatible with webext. (PM sync) (UXP)
+  ECHO Centaury/Basilisk Based FF52.9 Compat. webextension? (PM sync) (UXP)
   ECHO #Waterfox code:
   ECHO Waterfox 56.2.10. Based FF56, Compatible with XUL and webextensions  
   ECHO Waterfox Beta. Based FF68, Limited compatibility with XUL - webextensions  
   ECHO #Palemoon code:
   ECHO Palemoon27. Based FF38. Compatible XUL extension FF27(pre Australis UI)(PM sync)
-  ECHO Palemoon29. Based FF52. Compatible XUL extension FF27(pre Australis UI)(PM sync)
+  ECHO Palemoon28. Based FF52. Compatible XUL extension FF27(pre Australis UI)(PM sync)(UXP)
   ECHO K-meleon74-Goanna2.2. Compatible Windows2000, WinXP, [Win98+KernelEx]
   ECHO K-meleon76-Goanna3.4. Compatible WinXP, Windows2000 (CPU: SSE instructions??)
   PAUSE
@@ -281,6 +336,7 @@ GOTO SECTION1
   ECHO/
   ECHO #For additional info, latest version or submit bugs:	
   ECHO https://github.com/dapgo/Menu_Launcher4multiple_FF
+  ECHO About: By Daniel Perez Gonzalez 
   ECHO/
   PAUSE
   CLS
@@ -288,77 +344,22 @@ GOTO SECTION1
 
 
 
-:SECTION2
-IF "%MODEDEBUG%" == "Y"  (  ECHO Root %BROWSERPATH% 
-	ECHO Complete Profile path: %PROFILEPATH% 
-  )
-
-
-SET NAME1=Basilisk201906(64b)					.
-SET PATH1BIN=\basilisk_201906\
-IF EXIST "%BROWSERPATH%%PATH1BIN%" (SET Bin1Exist=[Y])  ELSE (SET Bin1Exist=[ ])
-
-SET NAME2=Basilisk2018(64b) (Mozilla SYNC)			.
-SET PATH2BIN=\basilisk_2018_SYNC\
-IF EXIST "%BROWSERPATH%%PATH2BIN%" (SET Bin2Exist=[Y])  ELSE (SET Bin2Exist=[ ])
-
-SET NAME3=Serpent(32b/XP) 201908 (Basilisk fork inc. SYNC)	.
-SET PATH3BIN=\Serpent_201908_wXP\
-IF EXIST "%BROWSERPATH%%PATH3BIN%" (SET Bin3Exist=[Y])  ELSE (SET Bin3Exist=[ ])
-
-SET NAME4=Centaury(32b/XP) 0.0.5/201902 (Basilisk fork)	.
-SET PATH4BIN=\Centaury201902_wXP\
-IF EXIST "%BROWSERPATH%%PATH4BIN%" (SET Bin4Exist=[Y])  ELSE (SET Bin4Exist=[ ])
-
-SET NAME5=Waterfox 56.2.7 (64b)				.
-SET PATH5BIN=\WaterfoxPortable56.2.7\App\Waterfox\
-IF EXIST "%BROWSERPATH%%PATH5BIN%" (SET Bin5Exist=[Y])  ELSE (SET Bin5Exist=[ ])
-
-SET NAME6=Waterfox 56.2.10 (64b)				.
-SET PATH6BIN=\WaterfoxPortable56.2.10\App\Waterfox\
-IF EXIST "%BROWSERPATH%%PATH6BIN%" (SET Bin6Exist=[Y])  ELSE (SET Bin6Exist=[ ])
-
-SET NAME7=Palemoon28.5.2 (32b)					.
-SET PATH7BIN=\PM2852_32b\Bin\Palemoon\
-IF EXIST "%BROWSERPATH%%PATH7BIN%" (SET Bin7Exist=[Y])  ELSE (SET Bin7Exist=[ ])
-
-SET NAME8=MyPal28 (32b/XP)					.
-SET PATH8BIN=\Mypal28_61_wXP\
-IF EXIST "%BROWSERPATH%%PATH8BIN%" (SET Bin8Exist=[Y])  ELSE (SET Bin8Exist=[ ])
-
-SET NAME9=NewMoon28 201908(32b/XP)				.
-SET PATH9BIN=\NewMoon287_201908_wXP\
-IF EXIST "%BROWSERPATH%%PATH9BIN%" (SET Bin9Exist=[Y])  ELSE (SET Bin9Exist=[ ])
-
-SET NAMEA=K-meleon Goanna(32b/XP)				.
-SET PATHABIN=\KM-Goanna\
-IF EXIST "%BROWSERPATH%%PATHABIN%" (SET BinAExist=[Y])  ELSE (SET BinAExist=[ ])
-
-SET NAMEB=Firefox Quantum v5704 (64b) 				.
-SET PATHBBIN=\FirefoxPortableQ5704\App\Firefox64\
-IF EXIST "%BROWSERPATH%%PATHBBIN%" (SET BinBExist=[Y])  ELSE (SET BinBExist=[ ])
-
-SET NAMEC=Firefox Dev Edition 65 (64b) 			.
-SET PATHCBIN=\FirefoxDev_65_x64\
-IF EXIST "%BROWSERPATH%%PATHCBIN%" (SET BinCExist=[Y])  ELSE (SET BinCExist=[ ])
-
-SET NAMED=Waterfox68beta (64b) 				.
-SET PATHDBIN=\PENDING\
-IF EXIST "%BROWSERPATH%%PATHDBIN%" (SET BinDExist=[Y])  ELSE (SET BinDExist=[ ])
-
-SET NAMEE=Firefox Portable 12 (32b)				.
-SET PATHEBIN=C:\Daniel\Portables\Firefox\FirefoxPortable12\
-IF EXIST "%PATHEBIN%" (SET BinEExist=[Y])  ELSE (SET BinEExist=[ ])
-
-SET NAMEF=Firefox Portable 3.6 (32b)				.
-SET PATHFBIN=C:\Daniel\Portables\Firefox\FirefoxPortableLegacy36\
-IF EXIST "%PATHFBIN%" (SET BinFExist=[Y])  ELSE (SET BinFExist=[ ])
-
 rem  ----------------------------------------------------
 rem                SECTION2 - Executable folder and filename 
 rem  ----------------------------------------------------
-rem ECHO/ white line remove if it fails
+
+  
+:SECTION2
+CLS
+
+IF "%V_MODEDEBUG%" == "Y"  (  
+    
+    ECHO Browser Compatible/Family: %V_FAMILY%  Debug: %V_MODEDEBUG%
+	ECHO Profile: %PROFILEPATH% 
+	ECHO Bin: %BROWSERPATH%
+  )
 ECHO/ 
+rem ECHO/ white line remove if it fails
 ECHO *************************************************************************
 ECHO ******  Menu2:   SELECT a WebBrowser version/fork                  ******
 ECHO ******  [Y] = Available and compatible with previous profile/root  ******
@@ -366,28 +367,170 @@ ECHO *************************************************************************
 ECHO/
 ECHO [Option] [ BrowserName    Version      Desc ]   [Bin folder Y/N]
 ECHO/
+
+IF "%V_FAMILY%"=="52" GOTO SECTION2.1_GROUP1
+IF "%V_FAMILY%"=="56" GOTO SECTION2.1_GROUP2
+IF "%V_FAMILY%"=="27" GOTO SECTION2.1_GROUP3
+IF "%V_FAMILY%"=="57" GOTO SECTION2.1_GROUP4
+IF "%V_FAMILY%"=="00" GOTO SECTION2.1_GROUP5
+
+
+REM ### BEGIN FF52 #####    
+:SECTION2.1_GROUP1
+	SET NAME1=Basilisk201906(64b)					.
+	SET PATH1BIN=\basilisk_201906\
+	IF EXIST "%BROWSERPATH%%PATH1BIN%" (SET Bin1Exist=[Y])  ELSE (SET Bin1Exist=[ ])
+
+	SET NAME2=Basilisk2018(64b) (Mozilla SYNC)			.
+	SET PATH2BIN=\basilisk_2018_SYNC\
+	IF EXIST "%BROWSERPATH%%PATH2BIN%" (SET Bin2Exist=[Y])  ELSE (SET Bin2Exist=[ ])
+
+	SET NAME3=Serpent(32b/XP) 201908 (Basilisk fork inc. SYNC)	.
+	SET PATH3BIN=\Serpent_201908_wXP\
+	IF EXIST "%BROWSERPATH%%PATH3BIN%" (SET Bin3Exist=[Y])  ELSE (SET Bin3Exist=[ ])
+
+	SET NAME4=Centaury(32b/XP) 0.0.6/201909 (Basilisk fork)	.
+	SET PATH4BIN=\Centaury_201909_006_wXP\
+	IF EXIST "%BROWSERPATH%%PATH4BIN%" (SET Bin4Exist=[Y])  ELSE (SET Bin4Exist=[ ])
+
+	IF NOT "%V_FAMILY%"=="ALL" GOTO SECTION2.2
+REM ### END FF52  #####    
+
+REM BEGIN FF56 #####
+:SECTION2.1_GROUP2
+	SET NAME5=Waterfox 56.2.7 (64b)				.
+	SET PATH5BIN=\WaterfoxPortable56.2.7\App\Waterfox\
+	IF EXIST "%BROWSERPATH%%PATH5BIN%" (SET Bin5Exist=[Y])  ELSE (SET Bin5Exist=[ ])
+
+	SET NAME6=Waterfox 56.2.14 (64b)				.
+	SET PATH6BIN=\WaterfoxPortable56.2.14\App\Waterfox\
+	IF EXIST "%BROWSERPATH%%PATH6BIN%" (SET Bin6Exist=[Y])  ELSE (SET Bin6Exist=[ ])
+
+	IF NOT "%V_FAMILY%"=="ALL" GOTO SECTION2.2
+REM END FF52  #####    
+
+REM BEGIN FF27/28 #####
+:SECTION2.1_GROUP3
+	SET NAME7=Palemoon28.5.2 (32b)					.
+	SET PATH7BIN=\PM2852_32b\Bin\Palemoon\
+	IF EXIST "%BROWSERPATH%%PATH7BIN%" (SET Bin7Exist=[Y])  ELSE (SET Bin7Exist=[ ])
+
+	SET NAME8=MyPal28 (32b/XP)					.
+	SET PATH8BIN=\Mypal28_61_wXP\
+	IF EXIST "%BROWSERPATH%%PATH8BIN%" (SET Bin8Exist=[Y])  ELSE (SET Bin8Exist=[ ])
+
+	rem SET NAME9=NewMoon28 201908(32b/XP)				.
+	rem SET PATH9BIN=\NewMoon287_201908_wXP\
+	SET NAME9=NewMoon27.9.6 (32b/XP)				.
+	SET PATH9BIN=\Newmoon2796_wXP\
+	IF EXIST "%BROWSERPATH%%PATH9BIN%" (SET Bin9Exist=[Y])  ELSE (SET Bin9Exist=[ ])
+
+	REM END FF27/28 #####
+	SET NAMEA=MyPal27.9.4 (32b/XP/ReactOS)				.
+	SET PATHABIN=\Mypal27_94_wXP\
+	IF EXIST "%BROWSERPATH%%PATHABIN%" (SET BinAExist=[Y])  ELSE (SET BinAExist=[ ])
+	
+	IF NOT "%V_FAMILY%"=="ALL" GOTO SECTION2.2
+
+REM BEGIN FF57 #####
+:SECTION2.1_GROUP4
+	SET NAMEB=Firefox Quantum v5704 (64b) 				.
+	SET PATHBBIN=\FirefoxPortableQ5704\App\Firefox64\
+	IF EXIST "%BROWSERPATH%%PATHBBIN%" (SET BinBExist=[Y])  ELSE (SET BinBExist=[ ])
+
+	SET NAMEC=Firefox Dev Edition 70 (64b) 			.
+	SET PATHCBIN=\FirefoxDev_70_x64\
+	IF EXIST "%BROWSERPATH%%PATHCBIN%" (SET BinCExist=[Y])  ELSE (SET BinCExist=[ ])
+
+	SET NAMED=Waterfox68beta (64b) 				.
+	SET PATHDBIN=\PENDING\
+	IF EXIST "%BROWSERPATH%%PATHDBIN%" (SET BinDExist=[Y])  ELSE (SET BinDExist=[ ])
+	
+	IF NOT "%V_FAMILY%"=="ALL" GOTO SECTION2.2
+REM END FF57 #####
+
+REM BEGIN Portables #####
+:SECTION2.1_GROUP5
+	SET NAMEE=Firefox Portable 12 (32b)				.
+	SET PATHEBIN=C:\Daniel\Portables\Firefox\FirefoxPortable12\
+	IF EXIST "%PATHEBIN%" (SET BinEExist=[Y])  ELSE (SET BinEExist=[ ])
+
+	SET NAMEF=Firefox Portable 3.6 (32b)				.
+	SET PATHFBIN=C:\Daniel\Portables\Firefox\FirefoxPortableLegacy36\
+	IF EXIST "%PATHFBIN%" (SET BinFExist=[Y])  ELSE (SET BinFExist=[ ])
+	
+	SET NAMEG=Firefox Portable Quantum (64b)			.
+	SET PATHGBIN=C:\Daniel\Portables\Firefox\PEND\
+	IF EXIST "%PATHFBIN%" (SET BinGExist=[Y])  ELSE (SET BinGExist=[ ])
+	
+	SET NAMEI=K-meleon 76 Goanna 3.4(32b/XP)			.
+	SET PATHIBIN=C:\Daniel\Portables\PalemoonBrowsers\KM76.2_20190831\
+	IF EXIST "%PATHIBIN%" (SET BinIExist=[Y])  ELSE (SET BinIExist=[ ])
+	
+	SET NAMEJ=K-(32b/XP)			.
+	SET PATHJBIN=C:\Daniel\Portables\PalemoonBrowsers\
+	IF EXIST "%PATHJBIN%" (SET BinIExist=[Y])  ELSE (SET BinIExist=[ ])
+	
+REM END Portables #####
+
+
+
+:SECTION2.2
+IF "%V_FAMILY%"=="52" GOTO SECTION2.2_GROUP1
+IF "%V_FAMILY%"=="56" GOTO SECTION2.2_GROUP2
+IF "%V_FAMILY%"=="27" GOTO SECTION2.2_GROUP3
+IF "%V_FAMILY%"=="57" GOTO SECTION2.2_GROUP4
+IF "%V_FAMILY%"=="00" GOTO SECTION2.2_GROUP5
+REM Otherwise (and value ALL) display entries
+
+:SECTION2.2_GROUP1
 ECHO 1) %NAME1%  %Bin1Exist%
 ECHO 2) %NAME2%  %Bin2Exist%
 ECHO 3) %NAME3%  %Bin3Exist%
 ECHO 4) %NAME4%  %Bin4Exist%
+IF NOT "%V_FAMILY%"=="ALL" GOTO MENU2_CHOICE
+
+:SECTION2.2_GROUP2
 ECHO 5) %NAME5%  %Bin5Exist%
 ECHO 6) %NAME6%  %Bin6Exist%
+IF NOT "%V_FAMILY%"=="ALL" GOTO MENU2_CHOICE
+:SECTION2.2_GROUP3
 ECHO 7) %NAME7%  %Bin7Exist%
 ECHO 8) %NAME8%  %Bin8Exist%
 ECHO 9) %NAME9%  %Bin9Exist%
 ECHO A) %NAMEA%  %BinAExist%
+IF NOT "%V_FAMILY%"=="ALL" GOTO MENU2_CHOICE
+:SECTION2.2_GROUP4
 ECHO B) %NAMEB%  %BinBExist%
 ECHO C) %NAMEC%  %BinCExist%
 ECHO D) %NAMED%  %BinDExist%
+IF NOT "%V_FAMILY%"=="ALL" GOTO MENU2_CHOICE
+:SECTION2.2_GROUP5
 ECHO E) %NAMEE%  %BinEExist%
 ECHO F) %NAMEF%  %BinFExist%
+ECHO G) %NAMEG%  %BinGExist%
+ECHO I) %NAMEI%  %BinIExist%
+ECHO J) %NAMEJ%  %BinJExist%
+IF NOT "%V_FAMILY%"=="ALL" GOTO MENU2_CHOICE
+:MENU2_CHOICE
 ECHO H/h) HELP/INFO
 ECHO Q/q) Quit/Exit
 ECHO/
-CHOICE /C 123456789ABCDEFHQ /M "Choose an option:"
+
+REM ###### CHOICE OS VARIANTS MENU2 ######
+IF %VAR_OS% == WIN7 ( 
+	CHOICE /C 123456789ABCDEFGIJHQ /M "Choose an option:"
+	)
+IF %VAR_OS% == REACTOS ( 	
+	CHOICE /C:123456789ABCDEFGIJHQ  "Choose an option:"	
+)
+IF %VAR_OS% == WINXP_W2003 ( 	
+	CHOICE.COM /C:123456789ABCDEFGIJHQ  "Choose an option:"	
+)
+
+
 ECHO/ 
 IF %ERRORLEVEL% == 1 GOTO label_1
-rem IF %ERRORLEVEL% == 2 GOTO basilisksync
 IF %ERRORLEVEL% == 2 GOTO label_2
 IF %ERRORLEVEL% == 3 GOTO label_3
 IF %ERRORLEVEL% == 4 GOTO label_4
@@ -402,8 +545,11 @@ IF %ERRORLEVEL% == 12 GOTO label_C
 IF %ERRORLEVEL% == 13 GOTO label_D
 IF %ERRORLEVEL% == 14 GOTO label_E
 IF %ERRORLEVEL% == 15 GOTO label_F
-IF %ERRORLEVEL% == 16 GOTO HELP
-IF %ERRORLEVEL% == 17 GOTO FIN
+IF %ERRORLEVEL% == 16 GOTO PEND!
+IF %ERRORLEVEL% == 17 GOTO label_I
+IF %ERRORLEVEL% == 18 GOTO label_J
+IF %ERRORLEVEL% == 19 GOTO HELP
+IF %ERRORLEVEL% == 20 GOTO FIN
 GOTO FIN
 
 :WAIT_A_MIN
@@ -502,12 +648,14 @@ REM Palemoon
  GOTO WAIT_A_MIN
  
 :label_A
- rem KmeleonGoanna
+ REM Mypal27
  CD /D "%BROWSERPATH%%PATHABIN%"
  CD
- rem nas not command line CALL k-meleon.exe -v |more
- START k-meleon.exe -no-remote -profile "%PROFILEPATH%"
+ CALL Mypal.exe -v |more
+ START Mypal.exe -no-remote -profile "%PROFILEPATH%"
  GOTO WAIT_A_MIN
+ 
+ 
  
 REM *************** SECTION FF57_QUANTUM *************** 
 REM ****************************************************
@@ -529,7 +677,7 @@ REM ****************************************************
  GOTO WAIT_A_MIN 
  
  
-REM *************** SECTION FF_OLD_FIREFOX *************** 
+REM *************** SECTION portables (own local profile) *************** 
 REM ***************************************************** 
  
 :label_E
@@ -544,6 +692,17 @@ REM *****************************************************
  CALL FirefoxPortable36.exe -v |more
  START FirefoxPortable36.exe
  GOTO WAIT_A_MIN
+
+:label_I
+ rem KmeleonGoanna
+ CD /D "%PATHIBIN%"
+ CD
+ rem nas not command line CALL k-meleon.exe -v |more
+ rem START k-meleon.exe 
+rem  START k-meleon.exe -P "Default"
+ START k-meleon.exe 
+ GOTO WAIT_A_MIN
+rem START k-meleon.exe -P "Default" -profilesDir "C:\Daniel\Portables\PalemoonBrowsers\KM-Goanna\Profiles\"
  
 :FIN				
 ECHO You can close this window				
