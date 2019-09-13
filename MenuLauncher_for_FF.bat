@@ -1,5 +1,9 @@
 @echo OFF
-SET VERSION=1.93(201909)
+rem Menu Launcher for multiple Firefox/webbrowsers
+rem https://github.com/dapgo/Menu_Launcher4multiple_FF
+SET VERSION=1.96(201909)
+
+
 SET V_MODEDEBUG=N
 REM SET V_MODEDEBUG=Y 
 REM Debug and Verbose output mode
@@ -11,7 +15,7 @@ IF %V_MODEDEBUG% ==Y (
 	wmic os get version
 	)
 
-rem findstr usign regexp not supported in Reactos
+rem findstr using regexp not supported in Reactos
 ver | findstr /i "5\.0\." >nul && ( ECHO Windows2000 & SET VAR_OS=WINXP_W2003)
 ver | findstr /i "5\.1\." >nul && ( echo WindowsXP32bit & SET VAR_OS=WINXP_W2003) 
 ver | findstr /i "5\.2\." >nul && ( echo WindowsXP64b/WinServer2003 & SET VAR_OS=WINXP_W2003)
@@ -20,19 +24,29 @@ ver | findstr /i "6\.0\." > nul && ( ECHO Windows Vista/Server2008 & SET VAR_OS=
 ver | findstr /i "6.1." > nul && ( ECHO win7/Server2008R2 & SET VAR_OS=WIN7 )
 rem ver | findstr /i "6.1." > nul && ( SET VAR_OS=REACTOS )
 rem ver | findstr /i "6\.1\." > nul && (echo Windows 7 / Server 2008R2 & GOTO :WIN7)
-ver | findstr /i "6\.2\." > nul && (echo Windows8/Server2012 & SET VAR_OS=WIN7 )
-ver | findstr /i "6\.3\." > nul && (echo Windows8.1/Server2012R2 & SET VAR_OS=WIN7 )
-ver | findstr /i "10\.0\." > nul && (echo Windows10/Server2016 & SET VAR_OS=WIN7 )
+ver | findstr /i "6\.2\." > nul && ( ECHO Windows8/Server2012 & SET VAR_OS=WIN7 )
+ver | findstr /i "6\.3\." > nul && ( ECHO Windows8.1/Server2012R2 & SET VAR_OS=WIN7 )
+ver | findstr /i "10\.0\." > nul && ( ECHO Windows10/Server2016 & SET VAR_OS=WIN7 )
 
-ECHO OS detected: %VAR_OS%
+
+
+rem IF /I "%~1"=="help" GOTO HELP
+IF /I "%*"=="help" GOTO HELP
+IF /I "%*"=="h" GOTO HELP
+IF /I "%*"=="-h" GOTO HELP
+IF /I "%*"=="/?" GOTO HELP
+IF /I "%*"=="about" GOTO ABOUT
+IF /I "%*"=="v" GOTO ABOUT
+IF /I "%*"=="-v" GOTO ABOUT
+IF /I "%*"=="version" GOTO ABOUT
+
 
 rem  --------------------------
-rem https://github.com/dapgo/Menu_Launcher4multiple_FF
+rem ------         Customize Batch
 rem  --------------------------
 rem 1st menu to identify paths for common/shared (profile)
 rem 2nd menu to identify a specific Webbrowser and its bin path (can use shared profiles)
 rem
-rem Notes I renamed the executable files with NO_use_EXE_ to avoid launching the .exe without profile argument.
 rem Intructions/sections to fill
 rem 1 For new computer or change of folder
 rem 1.1 Create a new ERRORLEVEL section for a computer using a different drive or folder
@@ -42,7 +56,7 @@ rem 2. For a new webBrowser fork or version
 rem 2.1 Create a new ERRORLEVEL section for the new webbrowser
 rem 2.2 rename executable folder and filename.exe
 rem  ----------------------------------------------------
-rem ------         NOTES /Information
+rem  ------         NOTES /Information
 rem  ----------------------------------------------------
 rem Basilisk default folder: -profile "c:\Users\username\AppData\Roaming\Moonchild Productions\Basilisk\Profiles\5sq5azxp.default
 rem
@@ -50,28 +64,11 @@ rem if path has not spaces inside do not quote variable %PROFILEPATH% it can fai
 rem 
 rem Portable.exe doesn't support profile parameters :  -no-remote -profile
 rem
-rem note that  ECHO/ for newline is not an official instruction, so remove it fails.
+rem note that  ECHO/ for newline is not an official instruction, so remove if it fails.
 rem be careful, do not add  slash at the end of paths
 rem be careful with hidden tab symbols in path etc
 rem 
-rem  ----------------------------------------------------
-rem                SECTION PENDING/BUGS/TO IMPROVE
-rem  ----------------------------------------------------
-rem  limit combination of profile and browser
-rem  replace all CMD/K  by START (go back to MENU)
-rem  add verbose mode, to print additional ECHO
-REM  identify available/existing folders and/or binaries and display
-REM  add WAIT_A_MIN pause after launch to all entries
 
-rem  ----------------------------------------------------
-rem                SECTION testing -hardcored
-rem  ----------------------------------------------------
-REM CD /D "C:\Daniel\Portables\Waterfox_browsers\WaterfoxPortable56.2.10\App\Waterfox"
-REM CD
-REM CALL Waterfox.exe -v |more
-REM IF EXIST C:\Daniel\Portables\Waterfox_browsers\WaterfoxPortable56.2.10\App\Waterfox\NUL SET Folder1Exist=Available
-REM IF NOT EXIST C:\Daniel\Portables\Waterfox_browsers\WaterfoxPortable56.2.10\App\Waterfox\NUL SET Folder1Exist=Not Available
-REM ECHO %Folder1Exist%
 
 rem  ----------------------------------------------------
 rem                SECTION 0 - Variables and Path Declaration
@@ -126,9 +123,9 @@ SET PATH7=G:\Portables\PalemoonBrowsers
 SET PROFILE7=G:\Portables\PalemoonBrowsers\Profiles\palemoon.default
 IF EXIST %PROFILE7% (SET Profile7Exist=[Y]) ELSE (SET Profile7Exist=[ ])
 
-SET NAME8=USB PenDrive - Drive G: (folder: Portables\BasiliskBrowsers)		.
-SET PATH8=G:\Portables\BasiliskBrowsers 
-SET PROFILE8=G:\Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
+SET NAME8=USB PenDrive - Drive G: (folder: Portables\Waterfox)			.
+SET PATH8=G:\Portables\Waterfox_browsers
+SET PROFILE8=G:\Portables\Waterfox_browsers\Profile
 IF EXIST %PROFILE8% (SET Profile8Exist=[Y]) ELSE (SET Profile8Exist=[ ])
 
 
@@ -144,10 +141,10 @@ ECHO " | |\/| |  _| |  \| | | | |  _____  | |_   | || |_) |  _| | |_ | | | \  / 
 ECHO " | |  | | |___| |\  | |_| | |_____| |  _|  | ||  _ <| |___|  _|| |_| /  \  "
 ECHO " |_|  |_|_____|_| \_|\___/          |_|   |___|_| \_|_____|_|   \___/_/\_\ "
 
-ECHO ******  v %VERSION%	 (by DaPGo) - GPL  - FullList: %V_FAMILY%	**************
-ECHO ******   https://github.com/dapgo/Menu_Launcher4multiple_FF      *********
-ECHO " _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____  "
-ECHO "|_____|_____|_____|_____|_____|_____|_____|_____|_____|_____|_____|_____| "
+ECHO _____	  v %VERSION%	 (by DaPGo) - GPL  - FullList: %V_FAMILY%  	_____
+ECHO _____    	https://github.com/dapgo/Menu_Launcher4multiple_FF    	_____
+
+
  rem ECHO/ white line remove if it fails
 
 ECHO OFF
@@ -161,13 +158,12 @@ rem  ----------------------------------------------------
 rem                SECTION1 - Root folder and PROFILE folder
 rem  ----------------------------------------------------
 rem ECHO ********************************************************************
-ECHO ***********   Menu1: PROFILE - SELECT a PATH/DRIVE     **************
-ECHO *********** H) Help for more info and predefined paths *************
-ECHO ********************************************************************
+ECHO _____   		Menu1: PROFILE - SELECT a PATH/DRIVE   		_____
+ECHO _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____
 ECHO/
 ECHO [Option] [ BrowserName     - (Drive, folder)     ]    [Profile available Y/N]
+ECHO/
 REM ECHO "______  ___________________________________     __________________"
-ECHO/ 
 ECHO 1) %NAME1%  %Profile1Exist%
 ECHO 2) %NAME2%  %Profile2Exist%
 ECHO 3) %NAME3%  %Profile3Exist%
@@ -177,9 +173,8 @@ ECHO 6) %NAME6%  %Profile6Exist%
 ECHO 7) %NAME7%  %Profile7Exist%
 ECHO 8) %NAME8%  %Profile8Exist%
 ECHO 9) %NAME9%  [?]
-ECHO H/h) HELP/INFO
+ECHO H/h) HELP (Includes info and predefined paths)
 ECHO Q/q) Quit/Exit
-ECHO/
 REM ###### CHOICE OS VARIANTS MENU1 ######
 IF %VAR_OS% == WIN7 ( 	
 	CHOICE /C 123456789HQ /M "Choose an option:"
@@ -201,7 +196,7 @@ IF %ERRORLEVEL% == 6 GOTO Path6
 IF %ERRORLEVEL% == 7 GOTO Path7
 IF %ERRORLEVEL% == 8 GOTO Path8
 IF %ERRORLEVEL% == 9 GOTO Path9
-IF %ERRORLEVEL% == 10 GOTO HELP
+IF %ERRORLEVEL% == 10 ( CLS & GOTO HELP )
 IF %ERRORLEVEL% == 11 GOTO FIN
 GOTO SECTION1
 
@@ -253,94 +248,6 @@ GOTO SECTION1
  IF NOT "%V_FAMILY%"=="ALL" SET "V_FAMILY=00
  GOTO SECTION2 
  
-:HELP		
-    CLS
-	
-	ECHO "      __  __ ______ __     ____              ____ _   __ ______ ____     "
-	ECHO "     / / / // ____// /    / __ \            /  _// | / // ____// __ \    "
-	ECHO "    / /_/ // __/  / /    / /_/ /  ______    / / /  |/ // /_   / / / /    "
-	ECHO "   / __  // /___ / /___ / ____/  /_____/  _/ / / /|  // __/  / /_/ /     "
-	ECHO "  /_/ /_//_____//_____//_/               /___//_/ |_//_/     \____/      "
-	ECHO **********************************************************************
-	ECHO ***********    HELP1: for Firefox Legacy browsers       **************
-	ECHO ***********         Information, tips, about            **************
-	ECHO **********************************************************************
- rem ECHO/ white line remove if it fails
-  ECHO/
-  ECHO The default Profile folder name is dynamic and change for each browser/computer, can be renamed when using from Menu/Command line
-  ECHO When a common Profile folder is stored at different PCs, changes on both PCs will disalign profile, sync frequently (copy paste after changes)
-  ECHO/
-  ECHO #tip1: To avoid problems caused by incompatible extensions/add-ins 
-  ECHO Share a profile folder among webbrowsers based in same or similar Firefox version
-  ECHO #tip2: Disable Addin automatic updates 
-  ECHO #tip2: Disable WebBrowser automatic updates 
-  ECHO #tip3: Update Addins always from your main browser
-  ECHO/
-  ECHO #Info about FF extension compatibility
-  ECHO Compatible FF27 AddIns(pre Australis UI). Browsers: Palemoon, FF27, Palemoon forks (Mypal, Newmoon, Kmeleon-Goanna), Basilisk!
-  ECHO Compatible FF52 (Australis UI) AddIns. Browsers: Basilisk, FF52, Basilisk forks (Centaury, Serpent), Waterfox! ..
-  ECHO Compatible FF56 AddIns. Browsers: Waterfox, FF56, ..
-  ECHO Compatible FF57 (Quantum) AddIns. Browsers: FF57, FF>57, Waterfox!
-  ECHO/
-  PAUSE
-   ECHO/ 
-   
-	ECHO **********************************************************************
-	ECHO ***********   	HELP2: Browsers/forks INFO    **************
-	ECHO **********************************************************************
-  ECHO/
-  ECHO #Basilisk code: 
-  ECHO Basilisk2018 Based FF52.9 Compatible with MozillaSync, MultiAccount container, basic webext.)(UXP)
-  ECHO Basilisk201906 Based FF52.9 Incompatible with webext. (PM sync) (UXP)
-  ECHO Centaury/Basilisk Based FF52.9 Compat. webextension? (PM sync) (UXP)
-  ECHO #Waterfox code:
-  ECHO Waterfox 56.2.10. Based FF56, Compatible with XUL and webextensions  
-  ECHO Waterfox Beta. Based FF68, Limited compatibility with XUL - webextensions  
-  ECHO #Palemoon code:
-  ECHO Palemoon27. Based FF38. Compatible XUL extension FF27(pre Australis UI)(PM sync)
-  ECHO Palemoon28. Based FF52. Compatible XUL extension FF27(pre Australis UI)(PM sync)(UXP)
-  ECHO K-meleon74-Goanna2.2. Compatible Windows2000, WinXP, [Win98+KernelEx]
-  ECHO K-meleon76-Goanna3.4. Compatible WinXP, Windows2000 (CPU: SSE instructions??)
-  PAUSE
-  ECHO/
-  ECHO **********************************************************************
-  ECHO ***********   	HELP3: Browsers/forks Downloads        **************
-  ECHO **********************************************************************
-  ECHO #Download Basilisk: http://archive.palemoon.org/basilisk/    
-  ECHO #Download Palemoon: http://archive.palemoon.org/palemoon/
-  ECHO #Download Mypal: https://github.com/Feodor2/Mypal/releases 
-  ECHO #Download Centaury: https://github.com/Feodor2/Centaury/releases
-  ECHO #ChangeLog for NM28XP, Serpent/UXP, Kmeleon:  http://rtfreesoft.blogspot.com/
-  ECHO #Download NewMoon(NM28XP):  https://o.rths.cf/palemoon/
-  ECHO #Download Serpent/UXP: https://o.rths.cf/basilisk/
-  ECHO #Download K-meleon-Goanna: https://o.rths.cf/kmeleon/
-  ECHO/
-	ECHO **********************************************************************
-	ECHO ***********   	HELP4: PATHS configured in Script        **************
-	ECHO **********************************************************************
-  ECHO/  
-  ECHO Path1 %PATH1%
-  ECHO Profile1 %PROFILE1%
-  ECHO Path2 %PATH2%
-  ECHO Profile2 %PROFILE2%
-  ECHO Path3 %PATH3%
-  ECHO Profile3 %PROFILE3%
-  ECHO Path4 %PATH4%
-  ECHO Profile4 %PROFILE4%
-  ECHO Path5 %PATH5%
-  ECHO Profile5 %PROFILE5%
-  ECHO Path6 %PATH6%  
-  ECHO Profile6 %PROFILE6%
-  ECHO Path6 %PATH7%  
-  ECHO Profile6 %PROFILE7%  
-  ECHO/
-  ECHO #For additional info, latest version or submit bugs:	
-  ECHO https://github.com/dapgo/Menu_Launcher4multiple_FF
-  ECHO About: By Daniel Perez Gonzalez 
-  ECHO/
-  PAUSE
-  CLS
-  GOTO MAINMENU
 
 
 
@@ -377,8 +284,8 @@ IF "%V_FAMILY%"=="00" GOTO SECTION2.1_GROUP5
 
 REM ### BEGIN FF52 #####    
 :SECTION2.1_GROUP1
-	SET NAME1=Basilisk201906(64b)					.
-	SET PATH1BIN=\basilisk_201906\
+	SET NAME1=Basilisk201909(32b)					.
+	SET PATH1BIN=\basilisk_201909_32b\
 	IF EXIST "%BROWSERPATH%%PATH1BIN%" (SET Bin1Exist=[Y])  ELSE (SET Bin1Exist=[ ])
 
 	SET NAME2=Basilisk2018(64b) (Mozilla SYNC)			.
@@ -434,42 +341,45 @@ REM BEGIN FF27/28 #####
 
 REM BEGIN FF57 #####
 :SECTION2.1_GROUP4
-	SET NAMEB=Firefox Quantum v5704 (64b) 				.
-	SET PATHBBIN=\FirefoxPortableQ5704\App\Firefox64\
+	SET NAMEB=Firefox Quantum v69.0 (64b) 				.
+	SET PATHBBIN=\FirefoxPortableQuantum\App\Firefox64\
 	IF EXIST "%BROWSERPATH%%PATHBBIN%" (SET BinBExist=[Y])  ELSE (SET BinBExist=[ ])
 
-	SET NAMEC=Firefox Dev Edition 70 (64b) 			.
-	SET PATHCBIN=\FirefoxDev_70_x64\
+	SET NAMEC=Firefox Quantum v69.0 (32b) 				.
+	SET PATHCBIN=\FirefoxPortableQuantum\App\Firefox\
 	IF EXIST "%BROWSERPATH%%PATHCBIN%" (SET BinCExist=[Y])  ELSE (SET BinCExist=[ ])
-
-	SET NAMED=Waterfox68beta (64b) 				.
-	SET PATHDBIN=\PENDING\
+	
+	SET NAMED=Firefox Dev Edition 70 (64b) 			.
+	SET PATHDBIN=\FirefoxDev_70_x64\
 	IF EXIST "%BROWSERPATH%%PATHDBIN%" (SET BinDExist=[Y])  ELSE (SET BinDExist=[ ])
+
+	SET NAMEE=Waterfox68beta (64b) 				.
+	SET PATHEBIN=\PENDING\
+	IF EXIST "%BROWSERPATH%%PATHEBIN%" (SET BinEExist=[Y])  ELSE (SET BinEExist=[ ])
 	
 	IF NOT "%V_FAMILY%"=="ALL" GOTO SECTION2.2
 REM END FF57 #####
 
 REM BEGIN Portables #####
 :SECTION2.1_GROUP5
-	SET NAMEE=Firefox Portable 12 (32b)				.
-	SET PATHEBIN=C:\Daniel\Portables\Firefox\FirefoxPortable12\
-	IF EXIST "%PATHEBIN%" (SET BinEExist=[Y])  ELSE (SET BinEExist=[ ])
+		
 
 	SET NAMEF=Firefox Portable 3.6 (32b)				.
 	SET PATHFBIN=C:\Daniel\Portables\Firefox\FirefoxPortableLegacy36\
 	IF EXIST "%PATHFBIN%" (SET BinFExist=[Y])  ELSE (SET BinFExist=[ ])
 	
-	SET NAMEG=Firefox Portable Quantum (64b)			.
-	SET PATHGBIN=C:\Daniel\Portables\Firefox\PEND\
-	IF EXIST "%PATHFBIN%" (SET BinGExist=[Y])  ELSE (SET BinGExist=[ ])
+	SET NAMEG=Firefox Portable 12 (32b)				.
+	SET PATHGBIN=C:\Daniel\Portables\Firefox\FirefoxPortable12\
+	IF EXIST "%PATHGBIN%" (SET BinGExist=[Y])  ELSE (SET BinGExist=[ ])
+	
 	
 	SET NAMEI=K-meleon 76 Goanna 3.4(32b/XP)			.
 	SET PATHIBIN=C:\Daniel\Portables\PalemoonBrowsers\KM76.2_20190831\
 	IF EXIST "%PATHIBIN%" (SET BinIExist=[Y])  ELSE (SET BinIExist=[ ])
 	
-	SET NAMEJ=K-(32b/XP)			.
-	SET PATHJBIN=C:\Daniel\Portables\PalemoonBrowsers\
-	IF EXIST "%PATHJBIN%" (SET BinIExist=[Y])  ELSE (SET BinIExist=[ ])
+	SET NAMEJ=Firefox Portable Quantum (64b)			.
+	SET PATHJBIN=C:\Daniel\Portables\QuantumBrowsers\FirefoxPortableQuantum\	
+	IF EXIST "%PATHJBIN%" (SET BinJExist=[Y])  ELSE (SET BinJExist=[ ])
 	
 REM END Portables #####
 
@@ -504,9 +414,9 @@ IF NOT "%V_FAMILY%"=="ALL" GOTO MENU2_CHOICE
 ECHO B) %NAMEB%  %BinBExist%
 ECHO C) %NAMEC%  %BinCExist%
 ECHO D) %NAMED%  %BinDExist%
+ECHO E) %NAMEE%  %BinEExist%
 IF NOT "%V_FAMILY%"=="ALL" GOTO MENU2_CHOICE
 :SECTION2.2_GROUP5
-ECHO E) %NAMEE%  %BinEExist%
 ECHO F) %NAMEF%  %BinFExist%
 ECHO G) %NAMEG%  %BinGExist%
 ECHO I) %NAMEI%  %BinIExist%
@@ -545,10 +455,10 @@ IF %ERRORLEVEL% == 12 GOTO label_C
 IF %ERRORLEVEL% == 13 GOTO label_D
 IF %ERRORLEVEL% == 14 GOTO label_E
 IF %ERRORLEVEL% == 15 GOTO label_F
-IF %ERRORLEVEL% == 16 GOTO PEND!
+IF %ERRORLEVEL% == 16 GOTO label_G
 IF %ERRORLEVEL% == 17 GOTO label_I
 IF %ERRORLEVEL% == 18 GOTO label_J
-IF %ERRORLEVEL% == 19 GOTO HELP
+IF %ERRORLEVEL% == 19 ( CLS & GOTO HELP )
 IF %ERRORLEVEL% == 20 GOTO FIN
 GOTO FIN
 
@@ -566,11 +476,11 @@ REM *****************************************************
 
 :label_1
  rem basilisk
- REM basilisk_201906
+ REM basilisk_201909
  CD /D "%BROWSERPATH%%PATH1BIN%"
  CD
- CALL NO_use_EXE_basilisk.exe -v |more
- START NO_use_EXE_basilisk.exe -no-remote -profile "%PROFILEPATH%" 
+ CALL basilisk.exe -v |more
+ START basilisk.exe -no-remote -profile "%PROFILEPATH%" 
  GOTO WAIT_A_MIN				
 
 :label_2
@@ -661,7 +571,7 @@ REM *************** SECTION FF57_QUANTUM ***************
 REM ****************************************************
 
 :label_B
- REM Quantum57
+ REM Quantum64b
  CD /D "%BROWSERPATH%%PATHBBIN%"
  CD
  CALL firefox.exe -v |more
@@ -669,28 +579,45 @@ REM ****************************************************
  GOTO WAIT_A_MIN
 
 :label_C
- REM Quantum57
+ REM Quantum32b
  CD /D "%BROWSERPATH%%PATHCBIN%"
  CD
  CALL firefox.exe -v |more
  START firefox.exe -no-remote -profile "%PROFILEPATH%"
  GOTO WAIT_A_MIN 
+
+:label_D
+ REM QuantumDev_Edition
+ CD /D "%BROWSERPATH%%PATHDBIN%"
+ CD
+ CALL firefox.exe -v |more
+ START firefox.exe -no-remote -profile "%PROFILEPATH%"
+ GOTO WAIT_A_MIN 
  
+ :label_E
+ rem WF68 PEND
+ CD /D "%PATHEBIN%"
+ ECHO PENDING
+ CALL Firefox -v |more
+ REM START firefox.exe -no-remote -profile "%PROFILEPATH%"
+ GOTO WAIT_A_MIN
  
 REM *************** SECTION portables (own local profile) *************** 
 REM ***************************************************** 
  
-:label_E
- rem Firefox12
- CD /D "%PATHEBIN%"
- CALL FirefoxPortable12.exe -v |more
- START FirefoxPortable12.exe
- GOTO WAIT_A_MIN
+
 :label_F
  rem Firefox3
  CD /D "%PATHFBIN%"
  CALL FirefoxPortable36.exe -v |more
  START FirefoxPortable36.exe
+ GOTO WAIT_A_MIN
+ 
+:label_G
+ rem Firefox12
+ CD /D "%PATHEBIN%"
+ CALL FirefoxPortable12.exe -v |more
+ START FirefoxPortable12.exe
  GOTO WAIT_A_MIN
 
 :label_I
@@ -703,7 +630,145 @@ rem  START k-meleon.exe -P "Default"
  START k-meleon.exe 
  GOTO WAIT_A_MIN
 rem START k-meleon.exe -P "Default" -profilesDir "C:\Daniel\Portables\PalemoonBrowsers\KM-Goanna\Profiles\"
+rem Default name through profiles.ini is associated to .\Profiles\la68p435.default\
+
+:label_J
+ rem Quantumportable
+ CD /D "%PATHJBIN%"
+ CALL FirefoxPortable.exe -v |more
+ START FirefoxPortable.exe
+ GOTO WAIT_A_MIN
+
+REM **************************** EXIT OF SCRIPT ******************
  
 :FIN				
 ECHO You can close this window				
 EXIT
+
+REM **************************** EXIT OF SCRIPT ******************
+
+
+
+
+:HELP		
+    	
+	ECHO "      __  __ ______ __     ____              ____ _   __ ______ ____     "
+	ECHO "     / / / // ____// /    / __ \            /  _// | / // ____// __ \    "
+	ECHO "    / /_/ // __/  / /    / /_/ /  ______    / / /  |/ // /_   / / / /    "
+	ECHO "   / __  // /___ / /___ / ____/  /_____/  _/ / / /|  // __/  / /_/ /     "
+	ECHO "  /_/ /_//_____//_____//_/               /___//_/ |_//_/     \____/      "
+	ECHO **********************************************************************
+	ECHO ***********    HELP0: for Firefox Legacy browsers       **************
+	ECHO ***********         Command Line parameters             **************
+	ECHO **********************************************************************
+	ECHO/
+	ECHO [Parameter/s]   :   Description
+	ECHO ______________  :   ___________________________________
+	ECHO -h, /?, /h, help 		: Help and Information (this page)
+	ECHO -v, v, version, about 	: Batch version and about  
+	ECHO Debug 			: verbose output for testing 
+	ECHO All, ListAll	: List all browsers (in 2nd Menu)
+	ECHO Family 		: List only browsers associated to profile (in 2nd Menu)
+	ECHO/
+  PAUSE
+	
+	ECHO **********************************************************************
+	ECHO ***********    HELP1: for Firefox Legacy browsers       **************
+	ECHO ***********         Information, tips, about            **************
+	ECHO **********************************************************************
+ rem ECHO/ white line remove if it fails
+  ECHO/
+  ECHO The default Profile folder name is dynamic and change for each browser/computer, can be renamed when using from Menu/Command line
+  ECHO When a common Profile folder is stored at different PCs, changes on both PCs will disalign profile, sync frequently (copy paste after changes)
+  ECHO/
+  ECHO #tip1: To avoid problems caused by incompatible extensions/add-ins 
+  ECHO Share a profile folder among webbrowsers based in same or similar Firefox version
+  ECHO #tip2: Disable Addin automatic updates 
+  ECHO #tip2: Disable WebBrowser automatic updates 
+  ECHO #tip3: Update Addins always from your main browser
+  ECHO/
+  ECHO #Info about FF extension compatibility
+  ECHO Compatible FF27 AddIns(pre Australis UI). Browsers: Palemoon, FF27, Palemoon forks (Mypal, Newmoon, Kmeleon-Goanna), Basilisk!
+  ECHO Compatible FF52 (Australis UI) AddIns. Browsers: Basilisk, FF52, Basilisk forks (Centaury, Serpent), Waterfox! ..
+  ECHO Compatible FF56 AddIns. Browsers: Waterfox, FF56, ..
+  ECHO Compatible FF57 (Quantum) AddIns. Browsers: FF57, FF>57, Waterfox!
+  ECHO/
+  PAUSE
+   ECHO/ 
+   
+	ECHO **********************************************************************
+	ECHO ***********   	HELP2: Browsers/forks INFO    **************
+	ECHO **********************************************************************
+  ECHO/
+  ECHO #Basilisk code: 
+  ECHO Basilisk2018 Based FF52.9 Compatible with MozillaSync, MultiAccount container, basic webext.)(UXP)
+  ECHO Basilisk201906 Based FF52.9 Incompatible with webext. (PM sync) (UXP)
+  ECHO Centaury/Basilisk Based FF52.9 Compat. webextension? (PM sync) (UXP)
+  ECHO #Waterfox code:
+  ECHO Waterfox 56.2.10. Based FF56, Compatible with XUL and webextensions  
+  ECHO Waterfox Beta. Based FF68, Limited compatibility with XUL - webextensions  
+  ECHO #Palemoon code:
+  ECHO Palemoon27. Based FF38. Compatible XUL extension FF27(pre Australis UI)(PM sync)
+  ECHO Palemoon28. Based FF52. Compatible XUL extension FF27(pre Australis UI)(PM sync)(UXP)
+  ECHO K-meleon74-Goanna2.2. Compatible Windows2000, WinXP, [Win98+KernelEx]
+  ECHO K-meleon76-Goanna3.4. Compatible WinXP, Windows2000 (CPU: SSE instructions??)
+  PAUSE
+  ECHO/
+  ECHO **********************************************************************
+  ECHO ***********   	HELP3: Browsers/forks Downloads        **************
+  ECHO **********************************************************************
+  ECHO #Download Basilisk: http://archive.palemoon.org/basilisk/    
+  ECHO #Download Palemoon: http://archive.palemoon.org/palemoon/
+  ECHO #Download Mypal: https://github.com/Feodor2/Mypal/releases 
+  ECHO #Download Centaury: https://github.com/Feodor2/Centaury/releases
+  ECHO #ChangeLog for NM28XP, Serpent/UXP, Kmeleon:  http://rtfreesoft.blogspot.com/
+  ECHO #Download NewMoon(NM28XP):  https://o.rths.cf/palemoon/
+  ECHO #Download Serpent/UXP: https://o.rths.cf/basilisk/
+  ECHO #Download K-meleon-Goanna: https://o.rths.cf/kmeleon/
+  ECHO/
+	ECHO **********************************************************************
+	ECHO ***********   	HELP4: PATHS configured in Script        **************
+	ECHO **********************************************************************
+  ECHO/  
+  ECHO Path1 %PATH1%
+  ECHO Profile1 %PROFILE1%
+  ECHO Path2 %PATH2%
+  ECHO Profile2 %PROFILE2%
+  ECHO Path3 %PATH3%
+  ECHO Profile3 %PROFILE3%
+  ECHO Path4 %PATH4%
+  ECHO Profile4 %PROFILE4%
+  ECHO Path5 %PATH5%
+  ECHO Profile5 %PROFILE5%
+  ECHO Path6 %PATH6%  
+  ECHO Profile6 %PROFILE6%
+  ECHO Path7 %PATH7%  
+  ECHO Profile7 %PROFILE7%    
+  ECHO Path8 %PATH8%  
+  ECHO Profile8 %PROFILE8%    
+  
+  ECHO/ 
+ 
+  PAUSE
+  CLS
+  GOTO MAINMENU
+
+
+
+
+
+:ABOUT
+  ECHO/
+  ECHO **********************************************************************
+  ECHO ***********   	About / version:                        **************
+  ECHO **********************************************************************
+  ECHO/  
+  ECHO Version: [ %VERSION% ] Running on: [ %VAR_OS% ]
+  ECHO By Daniel Perez Gonzalez - License: GPL
+  ECHO # For additional info, source code, latest version, collaborate or submit bugs:	
+  ECHO https://github.com/dapgo/Menu_Launcher4multiple_FF  
+  ECHO/
+  ECHO Default Script settings values:
+  ECHO ListAllBrowsers [ %V_VERBOSELIST% ], Mode Debug: [ %V_MODEDEBUG% ]  
+  ECHO/
+  PAUSE
