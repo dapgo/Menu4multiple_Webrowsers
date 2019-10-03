@@ -1,10 +1,16 @@
 @echo OFF
 rem Menu Launcher for multiple Firefox/webbrowsers
 rem https://github.com/dapgo/Menu_Launcher4multiple_FF
-SET VERSION=1.96(201909)
+rem ucbrowser installed extensions are not read by other chromium encripted?
+rem install from file crx version number invalid
 
+SET VERSION=1.982(201910)
+SET PATH_MENUBIN=%~dp0
 
-SET V_MODEDEBUG=N
+SET PATH_ROOT_CONTENT=C:\Daniel\Portables
+rem  SET PATH_ROOT_CONTENT=E:\Daniel\Portables
+
+SET V_MODEDEBUG=Y
 REM SET V_MODEDEBUG=Y 
 REM Debug and Verbose output mode
 SET V_VERBOSELIST=NO
@@ -75,15 +81,22 @@ rem                SECTION 0 - Variables and Path Declaration
 rem  ----------------------------------------------------
 
 :MAINMENU
+rem GO BACK TO MENU PATH
+CD %PATH_MENUBIN%
 
 SET V_FAMILY=%V_VERBOSELIST%
 REM SET V_FAMILY=ALL
 REM ALL will list all browsers in Menu
 REM NO or something else, will list only these browsers compatible with a specific family  
+REM  NAMEx=FF52/Basilisk (C:  \Program Files + \Roaming\Moonchild Prod.)	.
+REM PROFILEx=C:\Users\danielp\AppData\Roaming\Moonchild Productions\Basilisk\Profiles\7jgwm62d.default
+
+
 CLS
-SET NAME1=FF52/Basilisk (C:  \Program Files + \Roaming\Moonchild Prod.)	.
-SET PATH1=C:\Program Files\Basilisk
-SET PROFILE1=C:\Users\danielp\AppData\Roaming\Moonchild Productions\Basilisk\Profiles\7jgwm62d.default
+SET NAME1=Chrome/Chromium (C: folder: Portables\ChromeBrowsers)		.
+SET PATH1=%PATH_ROOT_CONTENT%\ChromeBrowsers
+SET PROFILE1=C:\Daniel\Portables\ChromeBrowsers\Profiles
+REM C:\Users\dperezgo\AppData\Local\Chromium\User Data
 IF EXIST "%PROFILE1%" (SET Profile1Exist=[Y])  ELSE (SET Profile1Exist=[ ])
 
 SET NAME2=FF52/Basilisk (C: folder: Portables\BasiliskBrowsers)		.
@@ -147,8 +160,11 @@ ECHO _____    	https://github.com/dapgo/Menu_Launcher4multiple_FF    	_____
 
  rem ECHO/ white line remove if it fails
 
+
+ 
 ECHO OFF
 IF "%V_MODEDEBUG%" == "Y"  ( 
+   ECHO var: %VAR_OS%  var Menu path:%PATH_MENUBIN%
    CD
    ver
  )
@@ -177,12 +193,13 @@ ECHO H/h) HELP (Includes info and predefined paths)
 ECHO Q/q) Quit/Exit
 REM ###### CHOICE OS VARIANTS MENU1 ######
 IF %VAR_OS% == WIN7 ( 	
-	CHOICE /C 123456789HQ /M "Choose an option:"
+	CHOICE.EXE /C 123456789HQ /M "Choose an option:"
 	)
 IF %VAR_OS% == REACTOS ( 	
-	CHOICE /C:123456789HQ "Choose an option:"
+	CHOICE.EXE /C:123456789HQ "Choose an option:"
 )
 IF %VAR_OS% == WINXP_W2003 ( 	
+    REM verify that 
 	CHOICE.COM /C:123456789HQ "Choose an option:"
 )
 	
@@ -203,7 +220,7 @@ GOTO SECTION1
 :Path1 
  SET BROWSERPATH=%PATH1%
  SET PROFILEPATH=%PROFILE1%
- IF NOT "%V_FAMILY%"=="ALL" SET V_FAMILY=52 
+ IF NOT "%V_FAMILY%"=="ALL" SET V_FAMILY=CH 
  GOTO SECTION2
  
 :Path2	  
@@ -275,12 +292,25 @@ ECHO/
 ECHO [Option] [ BrowserName    Version      Desc ]   [Bin folder Y/N]
 ECHO/
 
+REM number requires double quotes, text doesn't 
 IF "%V_FAMILY%"=="52" GOTO SECTION2.1_GROUP1
 IF "%V_FAMILY%"=="56" GOTO SECTION2.1_GROUP2
 IF "%V_FAMILY%"=="27" GOTO SECTION2.1_GROUP3
 IF "%V_FAMILY%"=="57" GOTO SECTION2.1_GROUP4
 IF "%V_FAMILY%"=="00" GOTO SECTION2.1_GROUP5
+IF %V_FAMILY%==CH GOTO SECTION2.1_GROUP6
+IF %V_FAMILY%==ALL GOTO SECTION2.1_GROUP1
 
+rem optional lines -TO Remove
+ECHO %V_FAMILY%   --Menu2 1st IF  Family no recognized
+PAUSE
+rem optional lines -TO Remove
+GOTO MAINMENU
+
+
+rem  ----------------------------------------------------
+rem        SUBSECTION2.1 - SET VAR Executable folder and filename 
+rem  ----------------------------------------------------
 
 REM ### BEGIN FF52 #####    
 :SECTION2.1_GROUP1
@@ -362,7 +392,6 @@ REM END FF57 #####
 
 REM BEGIN Portables #####
 :SECTION2.1_GROUP5
-		
 
 	SET NAMEF=Firefox Portable 3.6 (32b)				.
 	SET PATHFBIN=C:\Daniel\Portables\Firefox\FirefoxPortableLegacy36\
@@ -380,18 +409,55 @@ REM BEGIN Portables #####
 	SET NAMEJ=Firefox Portable Quantum (64b)			.
 	SET PATHJBIN=C:\Daniel\Portables\QuantumBrowsers\FirefoxPortableQuantum\	
 	IF EXIST "%PATHJBIN%" (SET BinJExist=[Y])  ELSE (SET BinJExist=[ ])
-	
+	IF NOT "%V_FAMILY%"=="ALL" GOTO SECTION2.2
 REM END Portables #####
 
+REM Chromium
+:SECTION2.1_GROUP6		
+	SET NAMEM=Chromium 45.0.2416.0 (32b)				.
+	SET PATHMBIN=%PATH_ROOT_CONTENT%\ChromeBrowsers\Chromium45.0.2416.0-w32\
+	IF EXIST "%PATHMBIN%" (SET BinMExist=[Y])  ELSE (SET BinMExist=[ ])
+	
+	SET NAMEN=Chromium 77.0.38 (32b) (ungoogled)(by Marmaduke)	.
+	SET PATHNBIN=%PATH_ROOT_CONTENT%\ChromeBrowsers\Chromium-77.0.3865.75-w32\
+	IF EXIST "%PATHNBIN%" (SET BinNExist=[Y])  ELSE (SET BinNExist=[ ])
+	
+	SET NAMEO=Brave 0.68.142 (Ch:77.0.3865) (32b) 			.
+	SET PATHOBIN=C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\
+	IF EXIST "%PATHOBIN%" (SET BinOExist=[Y])  ELSE (SET BinOExist=[ ])
+	
+	SET NAMEP=Opera 30 (NPAPI) (Ch:43.0) (32b/XP) 			.
+	SET PATHPBIN=%PATH_ROOT_CONTENT%\ChromeBrowsers\Opera30port_NPAPI\30.0.1835.88\
+	IF EXIST "%PATHPBIN%" (SET BinPExist=[Y])  ELSE (SET BinPExist=[ ])
+	
+	REM SET NAMER=UCBrowser 7.0.185 (Ch:55.0)(32b/XP) 			.
+	SET NAMER=360 Extreme Explorer 11.0.2216 (Ch:69.0)(32b/XP) 	.
+	REM SET PATHRBIN=%PATH_ROOT_CONTENT%\ChromeBrowsers\UCBrowser\Application\
+	SET PATHRBIN=%PATH_ROOT_CONTENT%\ChromeBrowsers\360extremeb_w32\
+	IF EXIST "%PATHRBIN%" (SET BinRExist=[Y])  ELSE (SET BinRExist=[ ])
+	
+	IF NOT "%V_FAMILY%"=="ALL" GOTO SECTION2.2
+REM end Chromium		
 
-
+rem  ----------------------------------------------------
+rem        SUBSECTION2.2 - PRINT VARs Executable folders and filename 
+rem  ----------------------------------------------------
 :SECTION2.2
 IF "%V_FAMILY%"=="52" GOTO SECTION2.2_GROUP1
 IF "%V_FAMILY%"=="56" GOTO SECTION2.2_GROUP2
 IF "%V_FAMILY%"=="27" GOTO SECTION2.2_GROUP3
 IF "%V_FAMILY%"=="57" GOTO SECTION2.2_GROUP4
 IF "%V_FAMILY%"=="00" GOTO SECTION2.2_GROUP5
+IF %V_FAMILY%==CH GOTO SECTION2.2_GROUP6
 REM Otherwise (and value ALL) display entries
+IF %V_FAMILY%==ALL GOTO SECTION2.2_GROUP1
+
+rem optional lines -TO Remove
+ECHO %V_FAMILY%   --Menu2 2nd IF - Family no recognized
+PAUSE
+rem optional lines -TO Remove
+GOTO MAINMENU
+
 
 :SECTION2.2_GROUP1
 ECHO 1) %NAME1%  %Bin1Exist%
@@ -422,6 +488,15 @@ ECHO G) %NAMEG%  %BinGExist%
 ECHO I) %NAMEI%  %BinIExist%
 ECHO J) %NAMEJ%  %BinJExist%
 IF NOT "%V_FAMILY%"=="ALL" GOTO MENU2_CHOICE
+
+:SECTION2.2_GROUP6
+ECHO M) %NAMEM%  %BinMExist%
+ECHO N) %NAMEN%  %BinNExist%
+ECHO O) %NAMEO%  %BinOExist%
+ECHO P) %NAMEP%  %BinPExist%
+ECHO R) %NAMER%  %BinRExist%
+IF NOT "%V_FAMILY%"=="ALL" GOTO MENU2_CHOICE
+
 :MENU2_CHOICE
 ECHO H/h) HELP/INFO
 ECHO Q/q) Quit/Exit
@@ -429,13 +504,13 @@ ECHO/
 
 REM ###### CHOICE OS VARIANTS MENU2 ######
 IF %VAR_OS% == WIN7 ( 
-	CHOICE /C 123456789ABCDEFGIJHQ /M "Choose an option:"
+	CHOICE.EXE /C 123456789ABCDEFGIJMNOPRHQ /M "Choose an option:"
 	)
 IF %VAR_OS% == REACTOS ( 	
-	CHOICE /C:123456789ABCDEFGIJHQ  "Choose an option:"	
+	CHOICE.EXE /C:123456789ABCDEFGIJMNOPRHQ  "Choose an option:"	
 )
 IF %VAR_OS% == WINXP_W2003 ( 	
-	CHOICE.COM /C:123456789ABCDEFGIJHQ  "Choose an option:"	
+	CHOICE.COM /C:123456789ABCDEFGIJMNOPRHQ  "Choose an option:"	
 )
 
 
@@ -458,8 +533,13 @@ IF %ERRORLEVEL% == 15 GOTO label_F
 IF %ERRORLEVEL% == 16 GOTO label_G
 IF %ERRORLEVEL% == 17 GOTO label_I
 IF %ERRORLEVEL% == 18 GOTO label_J
-IF %ERRORLEVEL% == 19 ( CLS & GOTO HELP )
-IF %ERRORLEVEL% == 20 GOTO FIN
+IF %ERRORLEVEL% == 19 GOTO label_M
+IF %ERRORLEVEL% == 20 GOTO label_N
+IF %ERRORLEVEL% == 21 GOTO label_O
+IF %ERRORLEVEL% == 22 GOTO label_P
+IF %ERRORLEVEL% == 23 GOTO label_R
+IF %ERRORLEVEL% == 24 ( CLS & GOTO HELP )
+IF %ERRORLEVEL% == 25 GOTO FIN
 GOTO FIN
 
 :WAIT_A_MIN
@@ -467,7 +547,7 @@ ECHO **********************************************************************
 ECHO ********     Selected WebBrowser is being launched        ************
 ECHO ********           Please Wait a Minute                  *************
 ECHO ***************************************************** ****************
-pause
+PAUSE
 GOTO MAINMENU
 
 REM *************** SECTION FF52_BASILISK *************** 
@@ -639,6 +719,45 @@ rem Default name through profiles.ini is associated to .\Profiles\la68p435.defau
  START FirefoxPortable.exe
  GOTO WAIT_A_MIN
 
+REM *************** SECTION Chromium *************** 
+REM ***************************************************** 
+ 
+:label_M 
+ CD /D "%PATHMBIN%"
+ ECHO Chromium 
+ START chrome --user-data-dir="%PROFILEPATH%" --disable-machine-id --disable-encryption --disable-update
+ REM --user-data-dir="C:\Users\dperezgo\AppData\Local\Chromium\User Data"
+ GOTO WAIT_A_MIN
+ 
+ :label_N 
+ CD /D "%PATHNBIN%"
+ ECHO Chromium 
+ START chrome --user-data-dir="%PROFILEPATH%" --disable-machine-id --disable-encryption --disable-update
+ REM --user-data-dir="C:\Users\dperezgo\AppData\Local\Chromium\User Data"
+ GOTO WAIT_A_MIN
+ 
+ 
+ :label_O 
+ CD /D "%PATHOBIN%"
+ ECHO Brave 
+ START brave --user-data-dir="%PROFILEPATH%" --disable-machine-id --disable-encryption --disable-update 
+ GOTO WAIT_A_MIN
+ REM C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\brave.exe
+ 
+ :label_P 
+ CD /D "%PATHPBIN%"
+ ECHO Opera
+ REM Opera required to specify the name of profile 
+ START opera.exe --user-data-dir="%PROFILEPATH%\Default" --disable-update --disable-machine-id --disable-encryption
+ GOTO WAIT_A_MIN
+ 
+ :label_R 
+ CD /D "%PATHRBIN%" 
+START 360chrome.exe --user-data-dir="%PROFILEPATH%" --disable-update --disable-machine-id --disable-encryption  
+REM START UCBrowser.exe --user-data-dir="%PROFILEPATH%" --disable-update --disable-machine-id --disable-encryption  
+ GOTO WAIT_A_MIN
+ 
+ 
 REM **************************** EXIT OF SCRIPT ******************
  
 :FIN				
@@ -725,6 +844,7 @@ REM **************************** EXIT OF SCRIPT ******************
   ECHO #Download NewMoon(NM28XP):  https://o.rths.cf/palemoon/
   ECHO #Download Serpent/UXP: https://o.rths.cf/basilisk/
   ECHO #Download K-meleon-Goanna: https://o.rths.cf/kmeleon/
+  ECHO #Download Chromium builds: https://chromium.woolyss.com/#browsers
   ECHO/
 	ECHO **********************************************************************
 	ECHO ***********   	HELP4: PATHS configured in Script        **************
