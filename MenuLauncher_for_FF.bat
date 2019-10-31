@@ -13,14 +13,14 @@ rem  ----------------------------------------------------
 rem                SECTION Vars and input parameters
 rem  ----------------------------------------------------
 
-SET VERSION=2.00(201910)
+SET VERSION=2.02(201910)
 REM Store the path were Menu.batch is located
 SET PATH_MENUBIN=%~dp0
 REM root folder for browser families
-SET PATH_ROOT_CONTENT=C:\Daniel\Portables
+SET PATH_ROOT_CONTENT=C:\Daniel\00_PortableBrowsers
 rem  SET PATH_ROOT_CONTENT=E:\Daniel\Portables
 
-SET V_MODEDEBUG=Y
+SET V_MODEDEBUG=N
 REM SET V_MODEDEBUG=Y 
 REM Values Y or something else
 
@@ -98,7 +98,7 @@ rem GO BACK TO PATH were batch menu is
 CD %PATH_MENUBIN%
 
 
-REM v1.99 SET V_FAMILY=%V_VERBOSELIST%
+REM delete v1.99 SET V_FAMILY=%V_VERBOSELIST%
 
 
 
@@ -129,13 +129,13 @@ SET PATH3=%PATH_ROOT_CONTENT%\PalemoonBrowsers
 SET PROFILE3=%PATH_ROOT_CONTENT%\PalemoonBrowsers\Profiles\Default
 IF EXIST %PROFILE3% (SET Profile3Exist=[Y]) ELSE (SET Profile3Exist=[ ])
 
-SET NAME4=!! FF52/Basilisk + Waterfox bin +  (C: Caution and backup profile)	.
+SET NAME4=FF52/Basilisk + Waterfox(56) bin +  (C: Caution and backup profile)	.
 SET PATH4=%PATH_ROOT_CONTENT%\Waterfox_browsers
 REM \WaterfoxPortable56.2.7\App\Waterfox
 SET PROFILE4=%PATH_ROOT_CONTENT%\BasiliskBrowsers\Profiles\5sq5azxp.default
 IF EXIST %PROFILE4% (SET Profile4Exist=[Y]) ELSE (SET Profile4Exist=[ ])
 
-SET NAME5=FF56/Waterfox (C: folder: Portables\Waterfox_browsers)		.
+SET NAME5=FF56/Waterfox Classic(C: folder: Portables\Waterfox_browsers)	.
 SET PATH5=%PATH_ROOT_CONTENT%\Waterfox_browsers
 SET PROFILE5=%PATH_ROOT_CONTENT%\Waterfox_browsers\Profile
 IF EXIST %PROFILE5% (SET Profile5Exist=[Y]) ELSE (SET Profile5Exist=[ ])
@@ -144,7 +144,8 @@ REM SET PROFILE5=%PATH_ROOT_CONTENT%\Waterfox_browsers\WaterfoxPortable56.2.7\Da
 
 SET NAME6=FF57/FirefoxQuantum (C: folder: Portables\QuantumBrowsers)		.
 SET PATH6=%PATH_ROOT_CONTENT%\QuantumBrowsers
-SET PROFILE6=%PATH_ROOT_CONTENT%\QuantumBrowsers\Profiles\1a9stydz.dev-default
+rem developer SET PROFILE6=%PATH_ROOT_CONTENT%\QuantumBrowsers\Profiles\1a9stydz.dev-default
+SET PROFILE6=%PATH_ROOT_CONTENT%\QuantumBrowsers\Profiles\QuantumDefault
 IF EXIST %PROFILE6% (SET Profile6Exist=[Y]) ELSE (SET Profile6Exist=[ ])
 
 SET NAME7=USB PenDrive - Drive G: (folder: Portables\PalemoonBrowsers)		.
@@ -206,17 +207,18 @@ ECHO 7) %NAME7%  %Profile7Exist%
 ECHO 8) %NAME8%  %Profile8Exist%
 ECHO 9) %NAME9%  [?]
 ECHO H/h) HELP (Includes info and predefined paths)
+ECHO X/x) Change List Mode: Full-All/Family
 ECHO Q/q) Quit/Exit
 REM ###### CHOICE OS VARIANTS MENU1 ######
 IF %VAR_OS% == WIN7 ( 	
-	CHOICE.EXE /C 123456789HQ /M "Choose an option:"
+	CHOICE.EXE /C 123456789HXQ /M "Choose an option:"
 	)
 IF %VAR_OS% == REACTOS ( 	
-	CHOICE.EXE /C:123456789HQ "Choose an option:"
+	CHOICE.EXE /C:123456789HXQ "Choose an option:"
 )
 IF %VAR_OS% == WINXP_W2003 ( 	
     REM verify that 
-	CHOICE.COM /C:123456789HQ "Choose an option:"
+	CHOICE.COM /C:123456789HXQ "Choose an option:"
 )
 	
 ECHO/ 
@@ -230,13 +232,14 @@ IF %ERRORLEVEL% == 7 GOTO Path7
 IF %ERRORLEVEL% == 8 GOTO Path8
 IF %ERRORLEVEL% == 9 GOTO Path9
 IF %ERRORLEVEL% == 10 ( CLS & GOTO HELP )
-IF %ERRORLEVEL% == 11 GOTO FIN
+IF %ERRORLEVEL% == 11 GOTO ChangeListMode_M1
+IF %ERRORLEVEL% == 12 GOTO FIN
 GOTO SECTION1
 
 :Path1 
  SET BROWSERPATH=%PATH1%
  SET PROFILEPATH=%PROFILE1%
- SET V_FAMILY=CH 
+ SET V_FAMILY=CH
  GOTO SECTION2
  
 :Path2	  
@@ -282,12 +285,23 @@ GOTO SECTION1
  rem 00 local profile
  GOTO SECTION2 
  
+:ChangeListMode_M1
+ IF %V_VERBOSELIST% == ALL (SET TEMP_MODE=NO)
+ IF NOT %V_VERBOSELIST% == ALL (SET TEMP_MODE=ALL)
+ SET V_VERBOSELIST=%TEMP_MODE%
+GOTO MAINMENU
 
 
 
 rem  ----------------------------------------------------
 rem                SECTION2 - Executable folder and filename 
 rem  ----------------------------------------------------
+
+:ChangeListMode_M2
+ IF %V_VERBOSELIST% == ALL (SET TEMP_MODE=NO)
+ IF NOT %V_VERBOSELIST% == ALL (SET TEMP_MODE=ALL)
+ SET V_VERBOSELIST=%TEMP_MODE%
+GOTO SECTION2
 
   
 :SECTION2
@@ -319,6 +333,8 @@ IF "%V_FAMILY%"=="FF27" GOTO SECTION2.1_GROUP3
 IF "%V_FAMILY%"=="FF57" GOTO SECTION2.1_GROUP4
 IF "%V_FAMILY%"=="00" GOTO SECTION2.1_GROUP5
 IF "%V_FAMILY%"=="CH" GOTO SECTION2.1_GROUP6
+IF %V_FAMILY%==CH GOTO SECTION2.1_GROUP6
+                       
 REM V1.99 IF %V_FAMILY%==ALL GOTO SECTION2.1_GROUP1
 
 rem optional lines -TO Remove
@@ -355,12 +371,12 @@ REM ### END FF52  #####
 
 REM BEGIN FF56 #####
 :SECTION2.1_GROUP2
-	SET NAME5=Waterfox 56.2.7 (64b)				.
-	SET PATH5BIN=\WaterfoxPortable56.2.7\App\Waterfox\
+	SET NAME5=Waterfox 56.2.14 (64b)				.
+	SET PATH5BIN=\WaterfoxPortable56.2.14\App\Waterfox\
 	IF EXIST "%BROWSERPATH%%PATH5BIN%" (SET Bin5Exist=[Y])  ELSE (SET Bin5Exist=[ ])
 
-	SET NAME6=Waterfox 56.2.14 (64b)				.
-	SET PATH6BIN=\WaterfoxPortable56.2.14\App\Waterfox\
+	SET NAME6=WaterfoxClassic 201910 (64b)				.
+	SET PATH6BIN=\WaterfoxClassicPort201910\App\Waterfox\
 	IF EXIST "%BROWSERPATH%%PATH6BIN%" (SET Bin6Exist=[Y])  ELSE (SET Bin6Exist=[ ])
 
 	IF NOT "%V_VERBOSELIST%"=="ALL" GOTO SECTION2.2
@@ -391,20 +407,25 @@ REM BEGIN FF27/28 #####
 
 REM BEGIN FF57 #####
 :SECTION2.1_GROUP4
-	SET NAMEB=Firefox Quantum v69.0 (64b) 				.
-	SET PATHBBIN=\FirefoxPortableQuantum\App\Firefox64\
+
+rem	SET NAMEB=Firefox Quantum v69.0 (64b) 				.
+rem	SET PATHBBIN=\FirefoxPortableQuantum\App\Firefox64\
+rem IF EXIST "%BROWSERPATH%%PATHBBIN%" (SET BinBExist=[Y])  ELSE (SET BinBExist=[ ])
+
+	SET NAMEB=Waterfox 56.2.14 (64b)				.
+	SET PATHBBIN=\WaterfoxPortable56.2.14\App\Waterfox\
 	IF EXIST "%BROWSERPATH%%PATHBBIN%" (SET BinBExist=[Y])  ELSE (SET BinBExist=[ ])
 
-	SET NAMEC=Firefox Quantum v69.0 (32b) 				.
+	SET NAMEC=Firefox Quantum v70 (32b) 				.
 	SET PATHCBIN=\FirefoxPortableQuantum\App\Firefox\
 	IF EXIST "%BROWSERPATH%%PATHCBIN%" (SET BinCExist=[Y])  ELSE (SET BinCExist=[ ])
 	
-	SET NAMED=Firefox Dev Edition 70 (64b) 			.
+	SET NAMED=Firefox Dev Edition 71 (64b) 			.
 	SET PATHDBIN=\FirefoxDev_70_x64\
 	IF EXIST "%BROWSERPATH%%PATHDBIN%" (SET BinDExist=[Y])  ELSE (SET BinDExist=[ ])
 
-	SET NAMEE=Waterfox68beta (64b) 				.
-	SET PATHEBIN=\PENDING\
+	SET NAMEE=WaterfoxCurrent 68/201910 (64b) 			.
+	SET PATHEBIN=\WaterfoxCurrent201910\
 	IF EXIST "%BROWSERPATH%%PATHEBIN%" (SET BinEExist=[Y])  ELSE (SET BinEExist=[ ])
 	
 	IF NOT "%V_VERBOSELIST%"=="ALL" GOTO SECTION2.2
@@ -462,10 +483,10 @@ REM Chromium
 	IF EXIST "%PATHSBIN%" (SET BinSExist=[Y])  ELSE (SET BinSExist=[ ])
 	
 	SET NAMET=Microsoft Edge 78.0.276 (own profile) (64b/win7) 	.
-	SET PATHTBIN=C:\Program Files (x86)\Microsoft\Edge Beta\Application\78.0.276.17
+	SET PATHTBIN=\EdgeBeta78_w7_64b\Application\
+	rem default C:\Program Files (x86)\Microsoft\Edge Beta\Application\78.0.276.17
 	REM exe (launcher??) is also in C:\Program Files (x86)\Microsoft\Edge Beta\Application
-	
-	IF EXIST "%PATHTBIN%" (SET BinTExist=[Y])  ELSE (SET BinTExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHRBIN%" (SET BinTExist=[Y])  ELSE (SET BinTExist=[ ])
 	
 	IF NOT "%V_VERBOSELIST%"=="ALL" GOTO SECTION2.2
 REM end Chromium		
@@ -533,19 +554,20 @@ ECHO T) %NAMET%  %BinTExist%
 IF NOT "%V_VERBOSELIST%"=="ALL" GOTO MENU2_CHOICE
 
 :MENU2_CHOICE
-ECHO H/h) HELP/INFO
-ECHO Q/q) Quit/Exit
-ECHO/
+ ECHO H/h) HELP/INFO
+ ECHO X/x) Change List Mode: Full-All/Family
+ ECHO Q/q) Quit/Exit
+ ECHO/
 
 REM ###### CHOICE OS VARIANTS MENU2 ######
 IF %VAR_OS% == WIN7 ( 
-	CHOICE.EXE /C 123456789ABCDEFGIJMNOPRSTHQ /M "Choose an option:"
+	CHOICE.EXE /C 123456789ABCDEFGIJMNOPRSTHXQ /M "Choose an option:"
 	)
 IF %VAR_OS% == REACTOS ( 	
-	CHOICE.EXE /C:123456789ABCDEFGIJMNOPRSTHQ  "Choose an option:"	
+	CHOICE.EXE /C:123456789ABCDEFGIJMNOPRSTHXQ  "Choose an option:"	
 )
 IF %VAR_OS% == WINXP_W2003 ( 	
-	CHOICE.COM /C:123456789ABCDEFGIJMNOPRSTHQ  "Choose an option:"	
+	CHOICE.COM /C:123456789ABCDEFGIJMNOPRSTHXQ  "Choose an option:"	
 )
 
 
@@ -576,7 +598,8 @@ IF %ERRORLEVEL% == 23 GOTO label_R
 IF %ERRORLEVEL% == 24 GOTO label_S
 IF %ERRORLEVEL% == 25 GOTO label_T
 IF %ERRORLEVEL% == 26 ( CLS & GOTO HELP )
-IF %ERRORLEVEL% == 27 GOTO FIN
+IF %ERRORLEVEL% == 27 GOTO ChangeListMode_M2
+IF %ERRORLEVEL% == 28 GOTO FIN
 GOTO FIN
 
 :WAIT_A_MIN
@@ -688,11 +711,12 @@ REM *************** SECTION FF57_QUANTUM ***************
 REM ****************************************************
 
 :label_B
- REM Quantum64b
+ REM WF56 on quantum
  CD /D "%BROWSERPATH%%PATHBBIN%"
  CD
- CALL firefox.exe -v |more
- START firefox.exe -no-remote -profile "%PROFILEPATH%"
+ CALL Waterfox.exe -v |more
+ START Waterfox.exe -no-remote -profile "%PROFILEPATH%" 
+ 
  GOTO WAIT_A_MIN
 
 :label_C
@@ -700,7 +724,7 @@ REM ****************************************************
  CD /D "%BROWSERPATH%%PATHCBIN%"
  CD
  CALL firefox.exe -v |more
- START firefox.exe -no-remote -profile "%PROFILEPATH%"
+ START firefox.exe --allow-downgrade -no-remote -profile "%PROFILEPATH%"
  GOTO WAIT_A_MIN 
 
 :label_D
@@ -708,15 +732,14 @@ REM ****************************************************
  CD /D "%BROWSERPATH%%PATHDBIN%"
  CD
  CALL firefox.exe -v |more
- START firefox.exe -no-remote -profile "%PROFILEPATH%"
+ START firefox.exe --allow-downgrade -no-remote -profile "%PROFILEPATH%"
  GOTO WAIT_A_MIN 
  
  :label_E
- rem WF68 PEND
- CD /D "%PATHEBIN%"
- ECHO PENDING
- CALL Firefox -v |more
- REM START firefox.exe -no-remote -profile "%PROFILEPATH%"
+ rem WFCurrent(68)
+ CD /D "%BROWSERPATH%%PATHEBIN%"
+ CALL Waterfox.exe -v |more
+ START Waterfox.exe --allow-downgrade -no-remote -profile "%PROFILEPATH%" 
  GOTO WAIT_A_MIN
  
 REM *************** SECTION portables (own local profile) *************** 
@@ -801,7 +824,7 @@ REM START UCBrowser.exe --user-data-dir="%PROFILEPATH%" --disable-update --disab
  GOTO WAIT_A_MIN
  
  :label_T
- CD /D %PATHTBIN%" 
+ CD /D %BROWSERPATH%%PATHTBIN%" 
 REM Edge add a Default after the path
 REM not compatible with other chrome profiles
 START msedge.exe --user-data-dir="C:\Daniel\Portables\ChromeBrowsers\Profiles_edge" --disable-update --disable-machine-id --disable-encryption  
