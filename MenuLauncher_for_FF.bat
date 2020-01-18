@@ -9,23 +9,33 @@ rem edge extensions at C:\Daniel\Portables\ChromeBrowsers\Profiles_edge\Default\
 rem 
 rem chromium77  extensions  - datadir \ChromeBrowsers\Profiles
 rem C:\Daniel\Portables\ChromeBrowsers\Profiles\Default\Extensions
+
+REM pending add/test LANG string to reactos winxp
+rem pend free variables mem when not using
 rem  ----------------------------------------------------
 rem                SECTION Vars and input parameters
 rem  ----------------------------------------------------
 
-SET VERSION=2.02(201910)
+SET VERSION=2.8(202001)
 REM Store the path were Menu.batch is located
 SET PATH_MENUBIN=%~dp0
 REM root folder for browser families
-SET PATH_ROOT_CONTENT=C:\Daniel\00_PortableBrowsers
-rem  SET PATH_ROOT_CONTENT=E:\Daniel\Portables
+
+
+REM ---ROOT PATH --- current chdir or a hardcoded path 
+REM SET PATH_ROOT_CONTENT=C:\Daniel\00_PortableBrowsers
+SET PATH_ROOT_CONTENT=%CD%
+ECHO PATH %PATH_ROOT_CONTENT%
+
 
 SET V_MODEDEBUG=N
+SET V_LANG=EN
+
 REM SET V_MODEDEBUG=Y 
 REM Values Y or something else
 
 REM ALL/Verbose output, Menu2 includes the full list of webbrowsers
-SET V_VERBOSELIST=ALL
+SET V_VERBOSELIST=N
 REM SET V_VERBOSELIST=ALL 
 REM Values ALL or something else 
 
@@ -50,6 +60,7 @@ ver | findstr /i "10\.0\." > nul && ( ECHO Windows10/Server2016 & SET VAR_OS=WIN
 
 
 rem IF /I "%~1"=="help" GOTO HELP
+rem /I  case Insensitive string comparison
 IF /I "%*"=="help" GOTO HELP
 IF /I "%*"=="h" GOTO HELP
 IF /I "%*"=="-h" GOTO HELP
@@ -58,6 +69,11 @@ IF /I "%*"=="about" GOTO ABOUT
 IF /I "%*"=="v" GOTO ABOUT
 IF /I "%*"=="-v" GOTO ABOUT
 IF /I "%*"=="version" GOTO ABOUT
+
+
+REM -------------- LANGUAGE STRINGS
+IF /I "%*"=="-l es" SET V_LANG=ES
+IF /I "%*"=="-l en" SET V_LANG=EN
 
 
 rem  --------------------------
@@ -97,9 +113,29 @@ rem  ----------------------------------------------------
 rem GO BACK TO PATH were batch menu is 
 CD %PATH_MENUBIN%
 
+REM LANGUAGE STRINGS ------------
+REM brackets requires double quotes
+IF /I %V_LANG%==ES (  
+	SET V_STR_HEADER10=PERFIL - SELECCIONAR una UNIDAD
+	SET V_STR_HEADER11="[Opcion] [ Navegador     - (Unidad, Carpeta)     ]    [Perfil disponible S/N]"
+	SET V_STR_HEADER20=SELECCIONAR un Navegador    version/variante
+	SET V_STR_HEADER21=Disponible y compat. con perfil de navegador:
+	SET V_STR_HEADER22="[Opcion] [ Navegador      Version      Desc ]   [Bin carpeta Si/No]"
+	SET V_STR_QUESTION1=Escoge una opcion:
+	SET V_STR_YES=Si
+	)
+IF /I NOT %V_LANG%==ES (    
+	SET V_STR_HEADER10=PROFILE - SELECT a PATH/DRIVE
+	SET V_STR_HEADER11="[Option] [ BrowserName     - (Drive, folder)     ]    [Profile available Y/N]"
+	SET V_STR_HEADER20=SELECT a WebBrowser version/fork
+	SET V_STR_HEADER21=Available and compat. with profile of browser:
+	SET V_STR_HEADER22="[Option] [ BrowserName    Version      Desc ]   [Bin folder Y/N]"
+	SET V_STR_QUESTION1=Choose an option:
+	SET V_STR_YES=Y
+)
+
 
 REM delete v1.99 SET V_FAMILY=%V_VERBOSELIST%
-
 
 
 REM ALL will list all browsers in Menu
@@ -113,7 +149,7 @@ SET NAME1=Chrome/Chromium (C: folder: Portables\ChromeBrowsers)		.
 SET PATH1=%PATH_ROOT_CONTENT%\ChromeBrowsers
 SET PROFILE1=%PATH_ROOT_CONTENT%\ChromeBrowsers\Profiles
 REM C:\Users\dperezgo\AppData\Local\Chromium\User Data
-IF EXIST "%PROFILE1%" (SET Profile1Exist=[Y])  ELSE (SET Profile1Exist=[ ])
+IF EXIST "%PROFILE1%" (SET Profile1Exist=[%V_STR_YES%])  ELSE (SET Profile1Exist=[ ])
 
 SET NAME2=FF52/Basilisk (C: folder: Portables\BasiliskBrowsers)		.
 REM =PC2 - Drive D: (folder: Portables\BasiliskBrowsers)
@@ -121,24 +157,24 @@ SET PATH2=%PATH_ROOT_CONTENT%\BasiliskBrowsers
 REM D:\20 Portables\BasiliskBrowsers 
 SET PROFILE2=%PATH_ROOT_CONTENT%\BasiliskBrowsers\Profiles\5sq5azxp.default
 REM D:\20 Portables\BasiliskBrowsers\Profiles\5sq5azxp.default
-IF EXIST %PROFILE2% (SET Profile2Exist=[Y]) ELSE (SET Profile2Exist=[ ])
+IF EXIST %PROFILE2% (SET Profile2Exist=[%V_STR_YES%]) ELSE (SET Profile2Exist=[ ])
 
 
 SET NAME3=FF28/Palemoon (C: folder: Portables\PalemoonBrowsers)		.
 SET PATH3=%PATH_ROOT_CONTENT%\PalemoonBrowsers
 SET PROFILE3=%PATH_ROOT_CONTENT%\PalemoonBrowsers\Profiles\Default
-IF EXIST %PROFILE3% (SET Profile3Exist=[Y]) ELSE (SET Profile3Exist=[ ])
+IF EXIST %PROFILE3% (SET Profile3Exist=[%V_STR_YES%]) ELSE (SET Profile3Exist=[ ])
 
 SET NAME4=FF52/Basilisk + Waterfox(56) bin +  (C: Caution and backup profile)	.
 SET PATH4=%PATH_ROOT_CONTENT%\Waterfox_browsers
 REM \WaterfoxPortable56.2.7\App\Waterfox
 SET PROFILE4=%PATH_ROOT_CONTENT%\BasiliskBrowsers\Profiles\5sq5azxp.default
-IF EXIST %PROFILE4% (SET Profile4Exist=[Y]) ELSE (SET Profile4Exist=[ ])
+IF EXIST %PROFILE4% (SET Profile4Exist=[%V_STR_YES%]) ELSE (SET Profile4Exist=[ ])
 
 SET NAME5=FF56/Waterfox Classic(C: folder: Portables\Waterfox_browsers)	.
 SET PATH5=%PATH_ROOT_CONTENT%\Waterfox_browsers
 SET PROFILE5=%PATH_ROOT_CONTENT%\Waterfox_browsers\Profile
-IF EXIST %PROFILE5% (SET Profile5Exist=[Y]) ELSE (SET Profile5Exist=[ ])
+IF EXIST %PROFILE5% (SET Profile5Exist=[%V_STR_YES%]) ELSE (SET Profile5Exist=[ ])
 REM DEFAULT profile path
 REM SET PROFILE5=%PATH_ROOT_CONTENT%\Waterfox_browsers\WaterfoxPortable56.2.7\Data\profile
 
@@ -146,17 +182,17 @@ SET NAME6=FF57/FirefoxQuantum (C: folder: Portables\QuantumBrowsers)		.
 SET PATH6=%PATH_ROOT_CONTENT%\QuantumBrowsers
 rem developer SET PROFILE6=%PATH_ROOT_CONTENT%\QuantumBrowsers\Profiles\1a9stydz.dev-default
 SET PROFILE6=%PATH_ROOT_CONTENT%\QuantumBrowsers\Profiles\QuantumDefault
-IF EXIST %PROFILE6% (SET Profile6Exist=[Y]) ELSE (SET Profile6Exist=[ ])
+IF EXIST %PROFILE6% (SET Profile6Exist=[%V_STR_YES%]) ELSE (SET Profile6Exist=[ ])
 
 SET NAME7=USB PenDrive - Drive G: (folder: Portables\PalemoonBrowsers)		.
 SET PATH7=G:\Portables\PalemoonBrowsers 
 SET PROFILE7=G:\Portables\PalemoonBrowsers\Profiles\palemoon.default
-IF EXIST %PROFILE7% (SET Profile7Exist=[Y]) ELSE (SET Profile7Exist=[ ])
+IF EXIST %PROFILE7% (SET Profile7Exist=[%V_STR_YES%]) ELSE (SET Profile7Exist=[ ])
 
 SET NAME8=USB PenDrive - Drive G: (folder: Portables\Waterfox)			.
 SET PATH8=G:\Portables\Waterfox_browsers
 SET PROFILE8=G:\Portables\Waterfox_browsers\Profile
-IF EXIST %PROFILE8% (SET Profile8Exist=[Y]) ELSE (SET Profile8Exist=[ ])
+IF EXIST %PROFILE8% (SET Profile8Exist=[%V_STR_YES%]) ELSE (SET Profile8Exist=[ ])
 
 
 SET NAME9=ANY PORTABLE with its own portable folder				.
@@ -171,8 +207,8 @@ ECHO " | |\/| |  _| |  \| | | | |  _____  | |_   | || |_) |  _| | |_ | | | \  / 
 ECHO " | |  | | |___| |\  | |_| | |_____| |  _|  | ||  _ <| |___|  _|| |_| /  \  "
 ECHO " |_|  |_|_____|_| \_|\___/          |_|   |___|_| \_|_____|_|   \___/_/\_\ "
 
-ECHO _____	  v %VERSION%	 (by DaPGo) - GPL  - FullList: [%V_VERBOSELIST%] 	_____
-ECHO _____    	https://github.com/dapgo/Menu_Launcher4multiple_FF    	_____
+ECHO _____	  v %VERSION%	 (by DaPGo) - Lang [%V_LANG%]  - FullList: [%V_VERBOSELIST%] 	_____
+ECHO _____  	https://github.com/dapgo/Menu_Launcher4multiple_FF  [GPL]	_____
 
 
  rem ECHO/ white line remove if it fails
@@ -191,10 +227,11 @@ rem  ----------------------------------------------------
 rem                SECTION1 - Root folder and PROFILE folder
 rem  ----------------------------------------------------
 rem ECHO ********************************************************************
-ECHO _____   		Menu1: PROFILE - SELECT a PATH/DRIVE   		_____
+ECHO _____   		Menu1: %V_STR_HEADER10%   		_____
 ECHO _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____
 ECHO/
-ECHO [Option] [ BrowserName     - (Drive, folder)     ]    [Profile available Y/N]
+ECHO %V_STR_HEADER11%
+rem to delete  ECHO [Option] [ BrowserName     - (Drive, folder)     ]    [Profile available Y/N]
 ECHO/
 REM ECHO "______  ___________________________________     __________________"
 ECHO 1) %NAME1%  %Profile1Exist%
@@ -206,19 +243,20 @@ ECHO 6) %NAME6%  %Profile6Exist%
 ECHO 7) %NAME7%  %Profile7Exist%
 ECHO 8) %NAME8%  %Profile8Exist%
 ECHO 9) %NAME9%  [?]
+ECHO L/l) Language/Lenguaje EN/ES
 ECHO H/h) HELP (Includes info and predefined paths)
 ECHO X/x) Change List Mode: Full-All/Family
 ECHO Q/q) Quit/Exit
 REM ###### CHOICE OS VARIANTS MENU1 ######
 IF %VAR_OS% == WIN7 ( 	
-	CHOICE.EXE /C 123456789HXQ /M "Choose an option:"
+	CHOICE.EXE /C 123456789LHXQ /M "%V_STR_QUESTION1%"
 	)
 IF %VAR_OS% == REACTOS ( 	
-	CHOICE.EXE /C:123456789HXQ "Choose an option:"
+	CHOICE.EXE /C:123456789LHXQ "Choose an option:"
 )
 IF %VAR_OS% == WINXP_W2003 ( 	
     REM verify that 
-	CHOICE.COM /C:123456789HXQ "Choose an option:"
+	CHOICE.COM /C:123456789LHXQ "Choose an option:"
 )
 	
 ECHO/ 
@@ -231,9 +269,10 @@ IF %ERRORLEVEL% == 6 GOTO Path6
 IF %ERRORLEVEL% == 7 GOTO Path7
 IF %ERRORLEVEL% == 8 GOTO Path8
 IF %ERRORLEVEL% == 9 GOTO Path9
-IF %ERRORLEVEL% == 10 ( CLS & GOTO HELP )
-IF %ERRORLEVEL% == 11 GOTO ChangeListMode_M1
-IF %ERRORLEVEL% == 12 GOTO FIN
+IF %ERRORLEVEL% == 10 GOTO ChangeLanguage
+IF %ERRORLEVEL% == 11 ( CLS & GOTO HELP )
+IF %ERRORLEVEL% == 12 GOTO ChangeListMode_M1
+IF %ERRORLEVEL% == 13 GOTO FIN
 GOTO SECTION1
 
 :Path1 
@@ -285,6 +324,12 @@ GOTO SECTION1
  rem 00 local profile
  GOTO SECTION2 
  
+:ChangeLanguage
+ IF /I %V_LANG%==EN (SET TEMP_LANG=ES) 
+ IF /I NOT %V_LANG%==EN (SET TEMP_LANG=EN) 
+ SET V_LANG=%TEMP_LANG%
+GOTO MAINMENU
+ 
 :ChangeListMode_M1
  IF %V_VERBOSELIST% == ALL (SET TEMP_MODE=NO)
  IF NOT %V_VERBOSELIST% == ALL (SET TEMP_MODE=ALL)
@@ -316,11 +361,13 @@ IF "%V_MODEDEBUG%" == "Y"  (
 ECHO/ 
 rem ECHO/ white line remove if it fails
 ECHO *************************************************************************
-ECHO ******  Menu2:   SELECT a WebBrowser version/fork                  ******
-ECHO ******  [Y] = Available and compat. with choosen [%V_FAMILY%] profile/root  ******
+ECHO ******  Menu2:   %V_STR_HEADER20%                  ******
+rem 
+ECHO ******  [%V_STR_YES%] = %V_STR_HEADER21% [%V_FAMILY%]   ******
 ECHO *************************************************************************
 ECHO/
-ECHO [Option] [ BrowserName    Version      Desc ]   [Bin folder Y/N]
+ECHO %V_STR_HEADER22%
+rem to delete ECHO [Option] [ BrowserName    Version      Desc ]   [Bin folder Y/N]
 ECHO/
 
 REM number requires double quotes, text doesn't 
@@ -350,58 +397,59 @@ rem  ----------------------------------------------------
 
 REM ### BEGIN FF52 #####    
 :SECTION2.1_GROUP1
-	SET NAME1=Basilisk201909(32b)					.
-	SET PATH1BIN=\basilisk_201909_32b\
-	IF EXIST "%BROWSERPATH%%PATH1BIN%" (SET Bin1Exist=[Y])  ELSE (SET Bin1Exist=[ ])
+	SET NAME1=Basilisk202001(64b)					.
+	SET PATH1BIN=\basilisk_202001_64b\
+	IF EXIST "%BROWSERPATH%%PATH1BIN%" (SET Bin1Exist=[%V_STR_YES%])  ELSE (SET Bin1Exist=[ ])
 
 	SET NAME2=Basilisk2018(64b) (Mozilla SYNC)			.
 	SET PATH2BIN=\basilisk_2018_SYNC\
-	IF EXIST "%BROWSERPATH%%PATH2BIN%" (SET Bin2Exist=[Y])  ELSE (SET Bin2Exist=[ ])
+	IF EXIST "%BROWSERPATH%%PATH2BIN%" (SET Bin2Exist=[%V_STR_YES%])  ELSE (SET Bin2Exist=[ ])
 
-	SET NAME3=Serpent(32b/XP) 201908 (Basilisk fork inc. SYNC)	.
-	SET PATH3BIN=\Serpent_201908_wXP\
-	IF EXIST "%BROWSERPATH%%PATH3BIN%" (SET Bin3Exist=[Y])  ELSE (SET Bin3Exist=[ ])
+	SET NAME3=Serpent(32b/XP) 201912				.
+	SET PATH3BIN=\Serpent_201912_32b_wXP\
+	IF EXIST "%BROWSERPATH%%PATH3BIN%" (SET Bin3Exist=[%V_STR_YES%])  ELSE (SET Bin3Exist=[ ])
 
 	SET NAME4=Centaury(32b/XP) 0.0.6/201909 (Basilisk fork)	.
 	SET PATH4BIN=\Centaury_201909_006_wXP\
-	IF EXIST "%BROWSERPATH%%PATH4BIN%" (SET Bin4Exist=[Y])  ELSE (SET Bin4Exist=[ ])
+	IF EXIST "%BROWSERPATH%%PATH4BIN%" (SET Bin4Exist=[%V_STR_YES%])  ELSE (SET Bin4Exist=[ ])
 
 	IF NOT "%V_VERBOSELIST%"=="ALL" GOTO SECTION2.2
 REM ### END FF52  #####    
 
 REM BEGIN FF56 #####
 :SECTION2.1_GROUP2
-	SET NAME5=Waterfox 56.2.14 (64b)				.
-	SET PATH5BIN=\WaterfoxPortable56.2.14\App\Waterfox\
-	IF EXIST "%BROWSERPATH%%PATH5BIN%" (SET Bin5Exist=[Y])  ELSE (SET Bin5Exist=[ ])
+	SET NAME5=WaterfoxPortable56.2.7 (64b)				.	
+	SET PATH5BIN=\WaterfoxPortable56.2.7\App\Waterfox\
+	IF EXIST "%BROWSERPATH%%PATH5BIN%" (SET Bin5Exist=[%V_STR_YES%])  ELSE (SET Bin5Exist=[ ])
 
-	SET NAME6=WaterfoxClassic 201910 (64b)				.
-	SET PATH6BIN=\WaterfoxClassicPort201910\App\Waterfox\
-	IF EXIST "%BROWSERPATH%%PATH6BIN%" (SET Bin6Exist=[Y])  ELSE (SET Bin6Exist=[ ])
+	SET NAME6=WaterfoxClassic 202001 (64b)				.
+	REM SET PATH6BIN=\WaterfoxClassicPort201912\
+	SET PATH6BIN=\WaterfoxClassicPort202001\
+	IF EXIST "%BROWSERPATH%%PATH6BIN%" (SET Bin6Exist=[%V_STR_YES%])  ELSE (SET Bin6Exist=[ ])
 
 	IF NOT "%V_VERBOSELIST%"=="ALL" GOTO SECTION2.2
 REM END FF52  #####    
 
 REM BEGIN FF27/28 #####
 :SECTION2.1_GROUP3
-	SET NAME7=Palemoon28.5.2 (32b)					.
-	SET PATH7BIN=\PM2852_32b\Bin\Palemoon\
-	IF EXIST "%BROWSERPATH%%PATH7BIN%" (SET Bin7Exist=[Y])  ELSE (SET Bin7Exist=[ ])
+	SET NAME7=Palemoon28.8.0 (32b)					.
+	SET PATH7BIN=\PM28_8_0_32b\Bin\Palemoon\
+	IF EXIST "%BROWSERPATH%%PATH7BIN%" (SET Bin7Exist=[%V_STR_YES%])  ELSE (SET Bin7Exist=[ ])
 
-	SET NAME8=MyPal28 (32b/XP)					.
-	SET PATH8BIN=\Mypal28_61_wXP\
-	IF EXIST "%BROWSERPATH%%PATH8BIN%" (SET Bin8Exist=[Y])  ELSE (SET Bin8Exist=[ ])
+	SET NAME8=MyPal28.7.2 (32b/XP)					.
+	SET PATH8BIN=\Mypal28_7_32_wXP\
+	IF EXIST "%BROWSERPATH%%PATH8BIN%" (SET Bin8Exist=[%V_STR_YES%])  ELSE (SET Bin8Exist=[ ])
 
 	rem SET NAME9=NewMoon28 201908(32b/XP)				.
 	rem SET PATH9BIN=\NewMoon287_201908_wXP\
-	SET NAME9=NewMoon27.9.6 (32b/XP)				.
-	SET PATH9BIN=\Newmoon2796_wXP\
-	IF EXIST "%BROWSERPATH%%PATH9BIN%" (SET Bin9Exist=[Y])  ELSE (SET Bin9Exist=[ ])
+	SET NAME9=NewMoon28.9 (32b/XP)					.
+	SET PATH9BIN=\NewMoon28_9_201912_32_wXP\
+	IF EXIST "%BROWSERPATH%%PATH9BIN%" (SET Bin9Exist=[%V_STR_YES%])  ELSE (SET Bin9Exist=[ ])
 
 	REM END FF27/28 #####
 	SET NAMEA=MyPal27.9.4 (32b/XP/ReactOS)				.
 	SET PATHABIN=\Mypal27_94_wXP\
-	IF EXIST "%BROWSERPATH%%PATHABIN%" (SET BinAExist=[Y])  ELSE (SET BinAExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHABIN%" (SET BinAExist=[%V_STR_YES%])  ELSE (SET BinAExist=[ ])
 	
 	IF NOT "%V_VERBOSELIST%"=="ALL" GOTO SECTION2.2
 
@@ -410,23 +458,23 @@ REM BEGIN FF57 #####
 
 rem	SET NAMEB=Firefox Quantum v69.0 (64b) 				.
 rem	SET PATHBBIN=\FirefoxPortableQuantum\App\Firefox64\
-rem IF EXIST "%BROWSERPATH%%PATHBBIN%" (SET BinBExist=[Y])  ELSE (SET BinBExist=[ ])
+rem IF EXIST "%BROWSERPATH%%PATHBBIN%" (SET BinBExist=[%V_STR_YES%])  ELSE (SET BinBExist=[ ])
 
 	SET NAMEB=Waterfox 56.2.14 (64b)				.
 	SET PATHBBIN=\WaterfoxPortable56.2.14\App\Waterfox\
-	IF EXIST "%BROWSERPATH%%PATHBBIN%" (SET BinBExist=[Y])  ELSE (SET BinBExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHBBIN%" (SET BinBExist=[%V_STR_YES%])  ELSE (SET BinBExist=[ ])
 
 	SET NAMEC=Firefox Quantum v70 (32b) 				.
 	SET PATHCBIN=\FirefoxPortableQuantum\App\Firefox\
-	IF EXIST "%BROWSERPATH%%PATHCBIN%" (SET BinCExist=[Y])  ELSE (SET BinCExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHCBIN%" (SET BinCExist=[%V_STR_YES%])  ELSE (SET BinCExist=[ ])
 	
 	SET NAMED=Firefox Dev Edition 71 (64b) 			.
 	SET PATHDBIN=\FirefoxDev_70_x64\
-	IF EXIST "%BROWSERPATH%%PATHDBIN%" (SET BinDExist=[Y])  ELSE (SET BinDExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHDBIN%" (SET BinDExist=[%V_STR_YES%])  ELSE (SET BinDExist=[ ])
 
-	SET NAMEE=WaterfoxCurrent 68/201910 (64b) 			.
-	SET PATHEBIN=\WaterfoxCurrent201910\
-	IF EXIST "%BROWSERPATH%%PATHEBIN%" (SET BinEExist=[Y])  ELSE (SET BinEExist=[ ])
+	SET NAMEE=WaterfoxCurrent 68/202001 (64b) 			.
+	SET PATHEBIN=\WaterfoxCurrent202001\
+	IF EXIST "%BROWSERPATH%%PATHEBIN%" (SET BinEExist=[%V_STR_YES%])  ELSE (SET BinEExist=[ ])
 	
 	IF NOT "%V_VERBOSELIST%"=="ALL" GOTO SECTION2.2
 REM END FF57 #####
@@ -436,20 +484,20 @@ REM BEGIN Portables #####
 rem Note that portables are using a different path var and not profile related
 	SET NAMEF=Firefox Portable 3.6 (32b)				.
 	SET PATHFBIN=%PATH_ROOT_CONTENT%\Firefox\FirefoxPortableLegacy36\
-	IF EXIST "%PATHFBIN%" (SET BinFExist=[Y])  ELSE (SET BinFExist=[ ])
+	IF EXIST "%PATHFBIN%" (SET BinFExist=[%V_STR_YES%])  ELSE (SET BinFExist=[ ])
 	
 	SET NAMEG=Firefox Portable 12 (32b)				.
 	SET PATHGBIN=%PATH_ROOT_CONTENT%\Firefox\FirefoxPortable12\
-	IF EXIST "%PATHGBIN%" (SET BinGExist=[Y])  ELSE (SET BinGExist=[ ])
+	IF EXIST "%PATHGBIN%" (SET BinGExist=[%V_STR_YES%])  ELSE (SET BinGExist=[ ])
 	
 	
 	SET NAMEI=K-meleon 76 Goanna 3.4(32b/XP)			.
-	SET PATHIBIN=%PATH_ROOT_CONTENT%\PalemoonBrowsers\KM76.2_20190831\
-	IF EXIST "%PATHIBIN%" (SET BinIExist=[Y])  ELSE (SET BinIExist=[ ])
+	SET PATHIBIN=%PATH_ROOT_CONTENT%\PalemoonBrowsers\KM76.2_20191116\
+	IF EXIST "%PATHIBIN%" (SET BinIExist=[%V_STR_YES%])  ELSE (SET BinIExist=[ ])
 	
 	SET NAMEJ=Firefox Portable Quantum (64b)			.
 	SET PATHJBIN=%PATH_ROOT_CONTENT%\QuantumBrowsers\FirefoxPortableQuantum\	
-	IF EXIST "%PATHJBIN%" (SET BinJExist=[Y])  ELSE (SET BinJExist=[ ])
+	IF EXIST "%PATHJBIN%" (SET BinJExist=[%V_STR_YES%])  ELSE (SET BinJExist=[ ])
 	IF NOT "%V_VERBOSELIST%"=="ALL" GOTO SECTION2.2
 REM END Portables #####
 
@@ -457,36 +505,44 @@ REM Chromium
 :SECTION2.1_GROUP6		
 	SET NAMEM=Chromium 45.0.2416.0 (32b)				.
 	SET PATHMBIN=\Chromium45.0.2416.0-w32\
-	IF EXIST "%BROWSERPATH%%PATHMBIN%" (SET BinMExist=[Y])  ELSE (SET BinMExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHMBIN%" (SET BinMExist=[%V_STR_YES%])  ELSE (SET BinMExist=[ ])
 	
 	SET NAMEN=Chromium 77.0.38 (32b) (ungoogled)(by Marmaduke)	.
 	SET PATHNBIN=\Chromium-77.0.3865.75-w32\
-	IF EXIST "%BROWSERPATH%%PATHNBIN%" (SET BinNExist=[Y])  ELSE (SET BinNExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHNBIN%" (SET BinNExist=[%V_STR_YES%])  ELSE (SET BinNExist=[ ])
 	
 	SET NAMEO=Brave 0.68.142 (Ch:77.0.3865) (32b) 			.
 	rem C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\
 	SET PATHOBIN=\BraveSoftware\Brave-Browser\Application\
-	IF EXIST "%BROWSERPATH%%PATHOBIN%" (SET BinOExist=[Y])  ELSE (SET BinOExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHOBIN%" (SET BinOExist=[%V_STR_YES%])  ELSE (SET BinOExist=[ ])
 	
 	SET NAMEP=Opera 30 (NPAPI) (Ch:43.0) (32b/XP) 			.
 	SET PATHPBIN=\Opera30port_NPAPI\30.0.1835.88\
-	IF EXIST "%BROWSERPATH%%PATHPBIN%" (SET BinPExist=[Y])  ELSE (SET BinPExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHPBIN%" (SET BinPExist=[%V_STR_YES%])  ELSE (SET BinPExist=[ ])
 	
 	REM SET NAMER=UCBrowser 7.0.185 (Ch:55.0)(32b/XP) 			.
 	SET NAMER=360 Extreme Explorer 11.0.2216 (Ch:69.0)(32b/XP) 	.
 	REM SET PATHRBIN=%PATH_ROOT_CONTENT%\ChromeBrowsers\UCBrowser\Application\
 	SET PATHRBIN=\360extremeb_w32\
-	IF EXIST "%BROWSERPATH%%PATHRBIN%" (SET BinRExist=[Y])  ELSE (SET BinRExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHRBIN%" (SET BinRExist=[%V_STR_YES%])  ELSE (SET BinRExist=[ ])
 	
 	SET NAMES=Google Chrome 48.0 (./Program Files/..)(32b) 	.
 	SET PATHSBIN=C:\Program Files (x86)\Google\Chrome\Application\
-	IF EXIST "%PATHSBIN%" (SET BinSExist=[Y])  ELSE (SET BinSExist=[ ])
+	IF EXIST "%PATHSBIN%" (SET BinSExist=[%V_STR_YES%])  ELSE (SET BinSExist=[ ])
 	
 	SET NAMET=Microsoft Edge 78.0.276 (own profile) (64b/win7) 	.
 	SET PATHTBIN=\EdgeBeta78_w7_64b\Application\
 	rem default C:\Program Files (x86)\Microsoft\Edge Beta\Application\78.0.276.17
 	REM exe (launcher??) is also in C:\Program Files (x86)\Microsoft\Edge Beta\Application
-	IF EXIST "%BROWSERPATH%%PATHRBIN%" (SET BinTExist=[Y])  ELSE (SET BinTExist=[ ])
+	IF EXIST "%BROWSERPATH%%PATHTBIN%" (SET BinTExist=[%V_STR_YES%])  ELSE (SET BinTExist=[ ])
+	
+	SET NAMEU=Microsoft Edge 79 (own profile) (64b/win7) 		.
+	SET PATHUBIN=\EdgeBeta79_w7_64b\
+	IF EXIST "%BROWSERPATH%%PATHUBIN%" (SET BinUExist=[%V_STR_YES%])  ELSE (SET BinUExist=[ ])
+	
+	SET NAMEV=Vivaldi 2.10.1745 (Ch:79.0.39) (64b) 		.
+	SET PATHVBIN=\Vivaldi2.10.1745_x64\
+	IF EXIST "%BROWSERPATH%%PATHVBIN%" (SET BinVExist=[%V_STR_YES%])  ELSE (SET BinVExist=[ ])
 	
 	IF NOT "%V_VERBOSELIST%"=="ALL" GOTO SECTION2.2
 REM end Chromium		
@@ -551,6 +607,8 @@ ECHO P) %NAMEP%  %BinPExist%
 ECHO R) %NAMER%  %BinRExist%
 ECHO S) %NAMES%  %BinSExist%
 ECHO T) %NAMET%  %BinTExist%
+ECHO U) %NAMEU%  %BinUExist%
+ECHO V) %NAMEV%  %BinVExist%
 IF NOT "%V_VERBOSELIST%"=="ALL" GOTO MENU2_CHOICE
 
 :MENU2_CHOICE
@@ -561,13 +619,13 @@ IF NOT "%V_VERBOSELIST%"=="ALL" GOTO MENU2_CHOICE
 
 REM ###### CHOICE OS VARIANTS MENU2 ######
 IF %VAR_OS% == WIN7 ( 
-	CHOICE.EXE /C 123456789ABCDEFGIJMNOPRSTHXQ /M "Choose an option:"
+	CHOICE.EXE /C 123456789ABCDEFGIJMNOPRSTUVHXQ /M "%V_STR_QUESTION1%"
 	)
 IF %VAR_OS% == REACTOS ( 	
-	CHOICE.EXE /C:123456789ABCDEFGIJMNOPRSTHXQ  "Choose an option:"	
+	CHOICE.EXE /C:123456789ABCDEFGIJMNOPRSTUVHXQ  "Choose an option:"	
 )
 IF %VAR_OS% == WINXP_W2003 ( 	
-	CHOICE.COM /C:123456789ABCDEFGIJMNOPRSTHXQ  "Choose an option:"	
+	CHOICE.COM /C:123456789ABCDEFGIJMNOPRSTUVHXQ  "Choose an option:"	
 )
 
 
@@ -597,9 +655,11 @@ IF %ERRORLEVEL% == 22 GOTO label_P
 IF %ERRORLEVEL% == 23 GOTO label_R
 IF %ERRORLEVEL% == 24 GOTO label_S
 IF %ERRORLEVEL% == 25 GOTO label_T
-IF %ERRORLEVEL% == 26 ( CLS & GOTO HELP )
-IF %ERRORLEVEL% == 27 GOTO ChangeListMode_M2
-IF %ERRORLEVEL% == 28 GOTO FIN
+IF %ERRORLEVEL% == 26 GOTO label_U
+IF %ERRORLEVEL% == 27 GOTO label_V
+IF %ERRORLEVEL% == 28 ( CLS & GOTO HELP )
+IF %ERRORLEVEL% == 29 GOTO ChangeListMode_M2
+IF %ERRORLEVEL% == 30 GOTO FIN
 GOTO FIN
 
 :WAIT_A_MIN
@@ -818,6 +878,7 @@ REM START UCBrowser.exe --user-data-dir="%PROFILEPATH%" --disable-update --disab
  GOTO WAIT_A_MIN
 
  :label_S
+ rem note that is installed at C:\Program Files
  CD /D %PATHSBIN%" 
 START chrome.exe --user-data-dir="%PROFILEPATH%" --disable-update --disable-machine-id --disable-encryption  
 REM START UCBrowser.exe --user-data-dir="%PROFILEPATH%" --disable-update --disable-machine-id --disable-encryption  
@@ -827,7 +888,11 @@ REM START UCBrowser.exe --user-data-dir="%PROFILEPATH%" --disable-update --disab
  CD /D %BROWSERPATH%%PATHTBIN%" 
 REM Edge add a Default after the path
 REM not compatible with other chrome profiles
-START msedge.exe --user-data-dir="C:\Daniel\Portables\ChromeBrowsers\Profiles_edge" --disable-update --disable-machine-id --disable-encryption  
+START msedge.exe --user-data-dir="%BROWSERPATH%\Profiles_edge"
+
+REM old hardcoded "C:\Daniel\00_PortableBrowsers\ChromeBrowsers\Profiles_edge" --disable-update --disable-machine-id --disable-encryption 
+
+rem --user-data-dir="C:\Daniel\Portables\ChromeBrowsers\Profiles_edge" --disable-update --disable-machine-id --disable-encryption  
 
 REM hardocoded testing
 rem msedge.exe --user-data-dir=C:\Daniel\Portables\ChromeBrowsers\Profiles_edge
@@ -836,6 +901,21 @@ REM  msedge.exe --user-data-dir="C:\Daniel\Portables\ChromeBrowsers\Profiles"
 REM START UCBrowser.exe --user-data-dir="%PROFILEPATH%" --disable-update --disable-machine-id --disable-encryption  
  GOTO WAIT_A_MIN
  
+  :label_U
+ CD /D %BROWSERPATH%%PATHUBIN%" 
+REM Edge add a Default after the path
+REM not compatible with other chrome profiles
+START msedge.exe --user-data-dir="%BROWSERPATH%\Profiles_edge"
+
+ GOTO WAIT_A_MIN
+ 
+  :label_V
+ CD /D %BROWSERPATH%%PATHVBIN%" 
+REM Edge add a Default after the path
+REM not compatible with other chrome profiles
+START Vivaldi.exe --user-data-dir="%PROFILEPATH%" --disable-machine-id --disable-encryption --disable-update
+
+ GOTO WAIT_A_MIN 
  
 REM **************************** EXIT OF SCRIPT ******************
  
@@ -863,6 +943,7 @@ REM **************************** EXIT OF SCRIPT ******************
 	ECHO [Parameter/s]   :   Description
 	ECHO ______________  :   ___________________________________
 	ECHO -h, /?, /h, help 		: Help and Information (this page)
+	ECHO -l es 			: Language: Spanish
 	ECHO -v, v, version, about 	: Batch version and about  
 	ECHO Debug 			: verbose output for testing 
 	ECHO All, ListAll	: List all browsers (in 2nd Menu)
@@ -925,6 +1006,7 @@ REM **************************** EXIT OF SCRIPT ******************
   ECHO #Download Serpent/UXP: https://o.rths.cf/basilisk/
   ECHO #Download K-meleon-Goanna: https://o.rths.cf/kmeleon/
   ECHO #Download Chromium builds: https://chromium.woolyss.com/#browsers
+  ECHO #Download Edge: https://www.microsoftedgeinsider.com/en-us/download
   ECHO/
 	ECHO **********************************************************************
 	ECHO ***********   	HELP4: PATHS configured in Script        **************
