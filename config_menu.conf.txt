@@ -1,0 +1,146 @@
+#!/bin/bash
+# avoid creation on Windows(CR LF) or transform to UNIX(LF)
+# error line x: $'\r': command not found
+# npp, Edit EOL Conversion,UNIX(LF)
+# groupItems are consecutive, gaps are not supported!!
+
+# Menu Launcher for multiple Firefox/webbrowsers
+# https://github.com/dapgo/Menu_Launcher4multiple_FF
+#PEND remove logic from file and add in a loop in the menu
+# COnfig file
+ #GLOBAL, overwrite var declaration on main script
+ V_MODEDEBUG="Y"
+ V_LANG="EN"
+ V_DISPLAY_TAGS="Y"
+ #ALL 1st screen list all browser even if not installed
+ V_VERBOSELIST="N"
+
+#temporary 
+ V_STR_YES="Y"
+V_STR_NO="N"
+
+#Possible Options on MENU (except reserved h,x,l,q)
+#Caps and noCaps must be equivalent in length and order
+V_STR_OPT="123456789abcdefgijkmnoprst"
+V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
+ 
+ #   Webbrowsers COnfig 
+ 
+ #for best display do not exceed the following length of vars
+ #NAME max 46 char
+ #V_FAMILY1 4char
+ #A_CLASIF 5strings, 10char
+ 
+  
+ NAME1="Vivaldi 2.10(CH79)(./ChromeBrowsers)"
+	 #PATH1="$PATH_ROOT_CONTENT/ChromeBrowsers"	 
+	 PROFILE1="$PATH_ROOT_CONTENT/ChromeBrowsers/Profiles"
+	 PATH1="$PATH_ROOT_CONTENT/ChromeBrowsers/Vivaldi_Mac_2.10/Vivaldi.app/Contents/MacOS"
+	 V_EXEC_BIN1="Vivaldi"
+	 V_FAMILY1="CH"
+	 A_CLASIF1=("CH79" "MAC" "64b" "apple")
+	
+
+	NAME2="Basilisk /Serpent2019 ( ./BasiliskBrowsers)"
+	PATH2="$PATH_ROOT_CONTENT/BasiliskBrowsers/Serpent_Mac_201910"
+	PROFILE2="$PATH_ROOT_CONTENT/BasiliskBrowsers/Profiles/5sq5azxp.default"
+       V_EXEC_BIN2="Serpent.app/Contents/MacOS/basilisk" 
+	V_FAMILY2="FF52"
+	A_CLASIF2=("FF52" "MAC" "64b" "apple")
+	
+
+	NAME3="Palemoon /NewMoon 28.8.0 ( ./PalemoonBrowsers)"
+	PATH3="$PATH_ROOT_CONTENT/PalemoonBrowsers/NewMoonMac"
+	PROFILE3="$PATH_ROOT_CONTENT/PalemoonBrowsers/Profiles/Default"
+	V_EXEC_BIN3="New Moon.app/Contents/MacOS/palemoon"
+	V_FAMILY3="FF27"
+	A_CLASIF3=("FF27" "MAC" "64b" "apple")
+	
+
+	NAME4="Palemoon  28.8.0 ( /usr/lib/palemoon/)"
+	#PATH4="$PATH_ROOT_CONTENT/PalemoonBrowsers"
+	PATH4="/usr/lib/palemoon"
+	#PROFILE4="$PATH_ROOT_CONTENT/PalemoonBrowsers/Profiles/Default"
+	PROFILE4="/home/dpg/.moonchild productions/pale moon/cr78tdr6.default"
+	V_EXEC_BIN4="palemoon"
+	V_FAMILY4="FF27"
+	A_CLASIF4=("FF27" "NIX" "64b" "Inst")
+	
+
+	 NAME5="WaterfoxClassic 202001 ( ./Waterfox_browsers)"
+	# PATH5="$PATH_ROOT_CONTENT/Waterfox_browsers/WaterfoxClassic_Mac_202001/Waterfox.app/Contents/MacOS"
+	 PATH5="$PATH_ROOT_CONTENT/Waterfox_browsers/Waterfox Classic.app/Contents/MacOS"
+	 PROFILE5="$PATH_ROOT_CONTENT/Waterfox_browsers/Profile"
+	 PROFILE5="$PATH_ROOT_CONTENT/Waterfox_browsers/Profile"
+	 V_EXEC_BIN5="waterfox"
+	 V_FAMILY5="FF56"
+	 A_CLASIF5=("FF56" "MAC" "64b")
+	 
+	NAME6="WaterfoxClassic 202001 ( ./Waterfox_browsers)"	 
+	PATH6="$PATH_ROOT_CONTENT/Waterfox_browsers/WaterfoxClassic_linux_202002"
+	PROFILE6="$PATH_ROOT_CONTENT/Waterfox_browsers/Profile"
+	V_EXEC_BIN6="waterfox-bin"	 		
+	V_FAMILY6="FF56"
+	A_CLASIF6=("FF56" "NIX" "64b" "Tar")
+	
+
+	NAME7="Basilisk /Serpent 202002 ( ./BasiliskBrowsers)"
+	PATH7="$PATH_ROOT_CONTENT/BasiliskBrowsers/basilisk_nix_202002"
+	PROFILE7="$PATH_ROOT_CONTENT/BasiliskBrowsers/Profiles/5sq5azxp.default"
+	V_EXEC_BIN7="basilisk-bin" 		
+	V_FAMILY7="FF52"
+	A_CLASIF7=("FF52" "NIX" "64b" "Tar")
+	
+
+	 NAME8="BrowserName!!!!! Version ( ./familyfolder)"
+	 PATH8="$PATH_ROOT_CONTENT/familyfolder/BrowserNameVer"
+	 PROFILE8="$PATH_ROOT_CONTENT/familyfolder/Profilesfolder/profile"
+	 V_EXEC_BIN8="browserbundle.app/Contents/MacOS/binary" 
+	 V_FAMILY8="FF57"
+	 A_CLASIF8=("FF57" "MAC" "64b" "apple")
+	
+	
+	
+	 NAME9="FirefoxQuantum 70.x ( ./QuantumBrowsers)"
+	 PATH9="$PATH_ROOT_CONTENT/QuantumBrowsers/Firefox72Mac"
+	 PROFILE9="$PATH_ROOT_CONTENT/QuantumBrowsers/Profiles/QuantumDefault"
+	 V_EXEC_BIN9="Firefox72Mac.app/Contents/MacOS/firefox" 
+	 V_FAMILY9="FF57"
+	 A_CLASIF9=("FF57" "MAC" "64b" "apple")
+	
+    
+    NAME10="GNU IceCat/Iceweasel 60.7 ( ./icecat60)"
+	PATH10="$PATH_ROOT_CONTENT/icecat60.7_nix86_64b"
+	PROFILE10="/home/dpg/.mozilla/icecat/4rft90ks.default"
+	V_EXEC_BIN10="icecat-bin" 
+	V_FAMILY10="FF56"
+	 A_CLASIF10=("FF57" "NIX" "64b" "Tar")
+	
+	
+    NAME11="Firefox 72 ( ./QuantumBrowsers)"
+	PATH11="$PATH_ROOT_CONTENT/QuantumBrowsers"
+	PROFILE11="$PATH_ROOT_CONTENT/QuantumBrowsers/Profiles/rl4e6zv1.default"
+	#V_EXEC_BIN11="Firefox-x86_64-20200118153954.AppImage" 
+	V_EXEC_BIN11="Firefox-x86_64-20200118153954.AppImage" 
+	V_FAMILY11="FF60"
+	A_CLASIF11=("FF60" "NIX" "64b" "AppImg")
+	
+
+	NAME12="WF current 202003 ( ./FF68Browsers)"
+	#espce removed from name to avoid error
+	PATH12="$PATH_ROOT_CONTENT/FF68_Browsers/WaterfoxCurrent.app/Contents/MacOS"
+	PROFILE12="$PATH_ROOT_CONTENT/FF68_Browsers/Profile"
+	V_EXEC_BIN12="waterfox" 
+	V_FAMILY12="FF68"
+	A_CLASIF12=("FF68" "MAC" "64b" "AppImg" "USB")
+	 
+
+	
+	# Browsers arguments
+	FF_1_ARGS1="--no-remote --profile $PROFILE2"
+	
+	CH_Vi_ARGS1="--user-data-dir="$PROFILE1" --disable-machine-id --disable-encryption --disable-update"
+	
+	
+	
+	

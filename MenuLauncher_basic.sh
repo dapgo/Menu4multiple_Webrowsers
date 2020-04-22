@@ -3,18 +3,25 @@
 # https://github.com/dapgo/Menu_Launcher4multiple_FF
 # specific for Unix script: Caps!!!, path slash....
 # profile path requires double quotes when has spaces
-# PEND
-# symlinks will no take the script path. 
+# USB Fat32
+# only for win and mac portables
+# PEND 
+# display clasification arrays
+# reduce hardcoding with dynamic variables
 
 
-VERSION="1.41 SingleMenu"
+VERSION="1.471 Basic 20200422"
 clear
 #naming the term window
 echo -n -e "\033]0;SingleMenu 4 Multiple Browsers\007"
 
+# -A associative array MUST be in main
+ # Careful  associative are local scope by default
+ declare -A array_enabled_browsers
+
 ObtainRealPath(){
 	# Begin obtain the realpath even if called from a symlink 
-	#to be teste in MaOSX
+	#to be teste in MacOSX
 	# print log only in debugmode
 	V_SOURCE="${BASH_SOURCE[0]}"
 	while [ -h "$V_SOURCE" ]; do # resolve $V_SOURCE until the file is no longer a symlink
@@ -46,6 +53,10 @@ DeclareVars()
 {
 	V_MODEDEBUG="Y"
 	# Store the path were Menu.batch is located
+	V_CONFIGFILE=config_menu.conf.txt
+	#file containing config, paths, strings....
+
+
 	
     #PATH_MENU_xx can be predefined or dynamic
 	# !doesn't work when launched from a symlink
@@ -59,7 +70,7 @@ DeclareVars()
 	# !doesn't work when launched from a symlink
 	#PATH_ROOT_CONTENT="$(dirname "$0")"
 
-	PATH_ROOT_CONTENT==$(ObtainRealPath)
+	PATH_ROOT_CONTENT=$(ObtainRealPath)
 	V_LANG="EN"
 	# Values Y or something else
 
@@ -67,6 +78,11 @@ DeclareVars()
 	 V_VERBOSELIST="N"
 	# V_VERBOSELIST="ALL"
 	# Values ALL or something else 
+	V_DISPLAY_TAGS="Y"
+	
+	# Reserved, to avoid h,l,x,q
+	V_STR_OPT="123456789abcdefgijkmnoprst"
+	V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 }
 
 
@@ -86,19 +102,20 @@ LoadLanguage()
 	if [ "$V_LANG" = "ES" ]
 		then  
 		 V_STR_HEADER10="Navegador  - SELECCIONAR una UNIDAD"
-		 V_STR_HEADER11="[Opcion] [ Navegador   - (Unidad, Carpeta)  ]  [Ejec/perfil disponible S/N]"
+		 V_STR_HEADER11="[Opcion] [Navegador (Unidad, Carpeta)] [etiqueta] [Ejec/perfil disponible]"
 		 V_STR_HEADER20="SELECCIONAR un Navegador    version/variante"
 		 V_STR_HEADER21="Disponible y compat. con perfil de navegador:"
 		 V_STR_HEADER22="[Opcion] [ Navegador    Version     Desc ]        [Bin carpeta S/N]"
 		 V_STR_QUESTION1="Escoge una opcion:"
-		 V_STR_YES="S"
+		 #due comparation when displaying PEND to fix
+		 V_STR_YES="Y"  
 		 V_STR_NO="N"
 		fi
 
 	if [ "$V_LANG" != "ES" ] 
 	then    
 		 V_STR_HEADER10="WebBrowser - SELECT a PATH/DRIVE"
-		 V_STR_HEADER11="[Option] [ BrowserName   - (Drive, folder)  ]  [Exec/profile available Y/N]"
+		 V_STR_HEADER11="[Option] [BrowserName (Drive, folder)] [tags]  [Bin/profile available]"
 		 V_STR_HEADER20="SELECT a WebBrowser version/fork"
 		 V_STR_HEADER21="Available and compat. with profile of browser:"
 		 V_STR_HEADER22="[Option] [ BrowserName  Version     Desc ]        [Bin folder Y/N]"
@@ -135,172 +152,103 @@ ChangeListMode_M1()
 }
 
 DebugStart()
-{
-	printf "Debug mode enabled,uname: `uname`"
-	printf "OStype: $OSTYPE "	
+{   printf "\n______________________________________________ \n"
+	printf "Debug mode enabled\n"
+	printf "uname: `uname` \n"
+	printf "OStype: $OSTYPE \n"	
 	bash -version |grep release
+	printf "Config file $V_CONFIGFILE \n"
     printf "PATH_MENUBIN: $PATH_MENUBIN \n"
 	printf "PATH_ROOT_CONTENT: $PATH_ROOT_CONTENT \n"
+    printf "______________________________________________ \n"
 
-sleep 3
+sleep 2
 }
 
+LoadBrowserConfiguration()
+{ 
+  # pend to call jutt once
+  #LOAD CONFIGFILE can overwrite vars on script	 
+	 #-s exists AND has a size > 0
+		         
+	 if [ -s "$V_CONFIGFILE" ] 
+	   then	
+			source ${V_CONFIGFILE} 	
+			if [ "$V_MODEDEBUG" = "Y" ] ; then echo "File Exists and loaded: $V_CONFIGFILE "; fi		
+	   else 			
+			echo "$V_CONFIGFILE Doesnt Exist"&&exit;
+	 fi	 
+	 
+   # Variables with Browser configuration content can be here
+   # Otherwise content will be read from config file (above)
+}
+
+ObtainTotalConfigItems()
+{
+ # input var: V_STR_CAPS_OPT
+ # output var: c_citems
+ # Count/Detect nbr of configuration items 1..9A..C
+ #  -z detect vars not defined 1=exist/set   (void =exist)
+ #  -n detect a var non void value 1=void
+ for ((c_citems=1;1==1;c_citems++)) 
+ do 
+   #variable with VarSuffix aka option char 
+   # no need anymore v_opt_chrCap=${V_STR_CAPS_OPT:c_citems-1:1}
+   #v_array_string="NAME$v_opt_chrCap"   
+   v_array_string="NAME$c_citems"   
+    	   
+   #+x parameter expansion evaluates to nothing if var is unset, and substitutes the string x otherwise.
+   if [ -z ${!v_array_string+x} ] ; then 
+         if [ "$V_MODEDEBUG" = "Y" ] ; then echo "Last: $c_citems-1 Not existing: $v_array_string"; fi		
+		break
+	else if [ "${!v_array_string}" == ""  ] ; then 	
+				#echo	"NOK. End. Void entry on: $v_array_string"
+		break				
+			# else  echo "OK, has value" ${!v_array_string} "on: $v_array_string"				
+	 fi
+   fi   
+ done
+  c_citems=$((c_citems-1))  
+  #if [ "$V_MODEDEBUG" = "Y" ] ;	then echo "Nbr of items : $c_citems "&&sleep 1;
+  #fi  
+}
 
 
 Inicio()
 {
- if [ "$V_MODEDEBUG" = "Y" ] 
-		then DebugStart		
+
+    if [ "$V_MODEDEBUG" = "Y" ] ;	then DebugStart		
 	fi
 
 	cd $PATH_MENUBIN
-
 	PATH_MENUBIN=$PWD
 	# root folder for browser families
-
-
 	# ---ROOT PATH --- current chdir or a hardcoded path 
 	#  PATH_ROOT_CONTENT=D:\00_PortableBrowsers
 	PATH_ROOT_CONTENT=$PWD
 	
-	
-
-    #Call to function language
-    LoadLanguage
-
-
 	#  ----------------------------------------------------
 	#                SECTION 0 - Variables and Path Declaration
 	#  ----------------------------------------------------
-
+	
 	# GO BACK TO PATH were batch menu is 
 	cd $PATH_MENUBIN
 	
-
-	 NAME1="Chromium/Vivaldi 2.10(ch79) (Mac64b)(./ChromeBrowsers)     	."
-	 #PATH1="$PATH_ROOT_CONTENT/ChromeBrowsers"	 
-	 PROFILE1="$PATH_ROOT_CONTENT/ChromeBrowsers/Profiles"
-	 PATH1="$PATH_ROOT_CONTENT/ChromeBrowsers/Vivaldi_Mac_2.10/Vivaldi.app/Contents/MacOS"
-	 V_EXEC_BIN1="Vivaldi"
-	 V_FAMILY1="CH"
-	if [ -d "$PATH1" ]  
-     then
-		 if [ -d "$PROFILE1" ] ; then 	Profile1Exist="[$V_STR_YES,$V_STR_YES]"
-		     else Profile1Exist="[$V_STR_YES,$V_STR_NO]"
-		 fi
-	else	Profile1Exist="[$V_STR_NO,$V_STR_NO]" 
-	fi
-
-	NAME2="FF52/Basilisk /Serpent 2019 (Mac64b)( ./BasiliskBrowsers)   	."
-	PATH2="$PATH_ROOT_CONTENT/BasiliskBrowsers/Serpent_Mac_201910"
-	PROFILE2="$PATH_ROOT_CONTENT/BasiliskBrowsers/Profiles/5sq5azxp.default"
-    V_EXEC_BIN2="Serpent.app/Contents/MacOS/basilisk" 
-	V_FAMILY1="FF52"
-	if [ -d "$PATH2" ]  
-     then
-		 if [ -d "$PROFILE2" ] ; then 	Profile2Exist="[$V_STR_YES,$V_STR_YES]"
-		     else Profile2Exist="[$V_STR_YES,$V_STR_NO]"
-		 fi
-	else	Profile2Exist="[$V_STR_NO,$V_STR_NO]" 
-	fi
-
-	NAME3="FF28/Palemoon /NewMoon 28.8.0 (Mac64b)( ./PalemoonBrowsers) 	."
-	PATH3="$PATH_ROOT_CONTENT/PalemoonBrowsers/NewMoonMac"
-	PROFILE3="$PATH_ROOT_CONTENT/PalemoonBrowsers/Profiles/Default"
-	V_EXEC_BIN3="New Moon.app/Contents/MacOS/palemoon"
-	V_FAMILY3="FF27"
-	 if [ -d "$PATH3" ]  
-     then
-		 if [ -d "$PROFILE3" ] ; then 	Profile3Exist="[$V_STR_YES,$V_STR_YES]"
-		     else Profile3Exist="[$V_STR_YES,$V_STR_NO]"
-		 fi
-	else	Profile3Exist="[$V_STR_NO,$V_STR_NO]" 
-	fi
-
-	NAME4="FF28/Palemoon  28.8.0 	(*nix64)( /usr/lib/palemoon/) 	."
-	#PATH4="$PATH_ROOT_CONTENT/PalemoonBrowsers"
-	PATH4="/usr/lib/palemoon"
-	#PROFILE4="$PATH_ROOT_CONTENT/PalemoonBrowsers/Profiles/Default"
-	PROFILE4="/home/dpg/.moonchild productions/pale moon/cr78tdr6.default"
-	V_EXEC_BIN4="palemoon"
-	V_FAMILY4="FF27"
-	if [ -d "$PATH4" ]  
-     then
-		 if [ -d "$PROFILE4" ] ; then 	Profile4Exist="[$V_STR_YES,$V_STR_YES]"
-		     else Profile4Exist="[$V_STR_YES,$V_STR_NO]"
-		 fi
-	else	Profile4Exist="[$V_STR_NO,$V_STR_NO]" 
-	fi
-
-	 NAME5="FF56/WaterfoxClassic 202001 (Mac64b)( ./Waterfox_browsers)   ."
-	 PATH5="$PATH_ROOT_CONTENT/Waterfox_browsers/WaterfoxClassic_Mac_202001/Waterfox.app/Contents/MacOS"
-	 PROFILE5="$PATH_ROOT_CONTENT/Waterfox_browsers/Profile"
-	 V_EXEC_BIN5="waterfox"
-	 V_FAMILY5="FF56"
-	 if [ -d "$PATH5" ] ;    then	 if [ -d "$PROFILE5" ]  
-	 										then 	Profile5Exist="[$V_STR_YES,$V_STR_YES]"
-									     	else Profile5Exist="[$V_STR_YES,$V_STR_NO]"
-		 								fi
-							else	Profile5Exist="[$V_STR_NO,$V_STR_NO]" 
-	fi
-
-	NAME6="FF56/WaterfoxClassic 202001 (*nix64)( ./Waterfox_browsers)   ."	 
-	PATH6="$PATH_ROOT_CONTENT/Waterfox_browsers/WaterfoxClassic_linux_202002"
-	PROFILE6="$PATH_ROOT_CONTENT/Waterfox_browsers/Profile"
-	V_EXEC_BIN6="waterfox-bin"	 		
-	V_FAMILY6="FF56"
-     if [ -d "$PATH6" ]  
-     then
-		 if [ -d "$PROFILE6" ] ; then 	Profile6Exist="[$V_STR_YES,$V_STR_YES]"
-		     else Profile6Exist="[$V_STR_YES,$V_STR_NO]"
-		 fi
-	else	Profile6Exist="[$V_STR_NO,$V_STR_NO]" 
-	fi
-
-	NAME7="FF52/Basilisk /Serpent 202002 (*nix64)( ./BasiliskBrowsers)  ."
-	PATH7="$PATH_ROOT_CONTENT/BasiliskBrowsers/basilisk_nix_202002"
-	PROFILE7="$PATH_ROOT_CONTENT/BasiliskBrowsers/Profiles/5sq5azxp.default"
-	V_EXEC_BIN7="basilisk-bin" 		
-	V_FAMILY7="FF52"
-	if [ -d "$PATH7" ]  
-     then
-		 if [ -d "$PROFILE7" ] ; then 	Profile7Exist="[$V_STR_YES,$V_STR_YES]"
-		     else Profile7Exist="[$V_STR_YES,$V_STR_NO]"
-		 fi
-	else	Profile7Exist="[$V_STR_NO,$V_STR_NO]" 
-	fi
-
-
-	 NAME9="FF57/FirefoxQuantum 70.x (Mac64b)( ./QuantumBrowsers)        ."
-	 PATH9="$PATH_ROOT_CONTENT/QuantumBrowsers/Firefox72Mac"
-	 PROFILE9="$PATH_ROOT_CONTENT/QuantumBrowsers/Profiles/QuantumDefault"
-	 V_EXEC_BIN9="Firefox72Mac.app/Contents/MacOS/firefox" 
-	 V_FAMILY9="FF57"
-	if [ -d "$PATH9" ]  
-     then
-		 if [ -d "$PROFILE9" ] ; then 	Profile9Exist="[$V_STR_YES,$V_STR_YES]"
-		     else Profile9Exist="[$V_STR_YES,$V_STR_NO]"
-		 fi
-	else	Profile9Exist="[$V_STR_NO,$V_STR_NO]" 
-	fi
-    
-    NAMEA="FF56/GNU IceCat/Iceweasel 60.7 (*nix64)( ./icecat60)        ."
-	PATHA="$PATH_ROOT_CONTENT/icecat60.7_nix86_64b"
-	PROFILEA="/home/dpg/.mozilla/icecat/4rft90ks.default"
-	V_EXEC_BINA="icecat-bin" 
-	V_FAMILYA="FF56"
-	if [ -d "$PATHA" ]  
-     then
-		 if [ -d "$PROFILEA" ] ; then 	ProfileAExist="[$V_STR_YES,$V_STR_YES]"
-		     else ProfileAExist="[$V_STR_YES,$V_STR_NO]"
-		 fi
-	else	ProfileAExist="[$V_STR_NO,$V_STR_NO]" 
-	fi
-
+    #  ------- Call to function language -------
+    LoadLanguage
 
 } #end of Inicio 
 
 Menu1(){
+ # input var: c_citems
+ 
+  
+ c_array_i=0
+ mystring="" 
+ #unset to remove values from a previous menu
+ unset array_enabled_browsers
+ 
+ 
     clear
 	echo "  _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____  "
 	echo " |_____|_____|_____|_____|_____|_____|_____|_____|_____|_____|_____|_____| "
@@ -314,10 +262,6 @@ Menu1(){
 	printf "_____	v $VERSION - Lang [$V_LANG] - FullList: [$V_VERBOSELIST]    ____\n"
 	printf "_____  https://github.com/dapgo/Menu_Launcher4multiple_FF [GPL]   ____\n"
 
-
-	if [ "$V_MODEDEBUG" = "Y" ]  
-	then   echo "var: $VAR_OS   path: $PATH_MENUBIN"      
-	fi
 
 	#:SECTION1
 	#  ----------------------------------------------------
@@ -333,154 +277,214 @@ Menu1(){
 	# echo "______  ___________________________________     __________________"
     
     #double uote if space in content
-	if [ "$Profile1Exist" =  "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		then echo "1) $NAME1  $Profile1Exist"
-	fi
-	if [ "$Profile2Exist" = "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		then echo "2) $NAME2  $Profile2Exist"
-	fi	
-	if [ "$Profile3Exist" = "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		then echo "3) $NAME3  $Profile3Exist"
-	fi	
-    if [ "$Profile4Exist" = "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		then echo "4) $NAME4  $Profile4Exist"
-	fi	 	
-	if [ "$Profile5Exist" = "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		then echo "5) $NAME5  $Profile5Exist"
-	fi
-    if [ "$Profile6Exist" = "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		then echo "6) $NAME6  $Profile6Exist"
-	fi
-	if [ "$Profile7Exist" = "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		then echo "7) $NAME7  $Profile7Exist"
-	fi
+	
+	for ((c_a=1;c_a<=c_citems;c_a++)) 
+	do 
+	 
+		 #v_opt_chr=${V_STR_OPT:c_a-1:1}
+		 #v_opt_chrCap=${V_STR_CAPS_OPT:c_a-1:1}
+		 #v_dyn_var1="NAME$v_opt_chrCap"	
+		 #v_dyn_var2="A_CLASIF$v_opt_chrCap[1]"	
+		 #v_dyn_var3="PATH$v_opt_chrCap"	
+		 #v_dyn_var4="PROFILE$v_opt_chrCap"	
+		 v_dyn_var1="NAME$c_a"	
+		 v_dyn_var2="A_CLASIF$c_a[1]"	
+		 v_dyn_var3="PATH$c_a"	
+		 v_dyn_var4="PROFILE$c_a"	
+		 
+		 
+		 #v_dyn_var3="A_CLASIF$c_a[]"	
+		 #echo "Value  (substituted var):::  " ${!v_dyn_var1}    
+		 #tab/columns printing, if space then quote variable
+		 
+		 #TEMP
+		
+		if [ -d "${!v_dyn_var3}" ]  
+		# ok if [ -d ${!v_dyn_var3} ]  
+			then 
+			     PathExist="Y"
+				 #if [ -d ${!v_dyn_var4} ] ; then ProfileExist="[$V_STR_YES,$V_STR_YES]"
+				 if [ -d "${!v_dyn_var4}" ] ; then ProfileExist="Y"
+				    #ProfileExist="[$V_STR_YES,$V_STR_YES]"
+					 else ProfileExist="N"
+					 #ProfileExist="[$V_STR_YES,$V_STR_NO]"
+				 fi
+			else PathExist="N"&&ProfileExist="N"
+			#ProfileExist="[$V_STR_NO,$V_STR_NO]" 
+			fi		 
 
-	if [ "$Profile9Exist" = "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		then echo "9) $NAME9  $Profile9Exist"
-	fi
-	if [ "$ProfileAExist" = "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		then echo "A) $NAMEA  $ProfileAExist"
-	fi
+
+		#Display if all or Exist		
+		#if [ "$ProfileExist" =  "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
+		if [ "$PathExist" =  "Y" ] || [ $V_VERBOSELIST = "ALL" ]
+		  then
+	        #options that will work in the anwser case 
+			
+			v_opt_chrCap=${V_STR_CAPS_OPT:c_array_i:1}	
+			v_opt_chr=${V_STR_OPT:c_array_i:1}
+			
+			#associative array, defined in main			
+			array_enabled_browsers[$v_opt_chrCap]=$c_a
+			
+			if (( "$c_array_i">"8" )); then array_enabled_browsers[$v_opt_chr]=$c_a;fi	
+			
+			#delete testing  echo "all content" ${array_enabled_browsers[*]}
+			#delete testing echo "all index" ${!array_enabled_browsers[@]}
+			
+					    
+			#create string with all options for case
+			#also works [ "$c_array_i" -eq "0" ]
+			if (( "$c_array_i"=="0" )); then mystring="${v_opt_chrCap}"                         
+			   else if (( "$c_array_i"<"8" )); then mystring="${mystring}""|""${v_opt_chrCap}"
+			    else if (( "$c_array_i">"8" )); then mystring="${mystring}""|""${v_opt_chrCap}""|""${v_opt_chr}";fi
+			   fi
+			fi  
+			#create string options for case
+			
+			printf "%2s %1s %-48s %5s %3s %3s\n" "${v_opt_chrCap}" ")" "${!v_dyn_var1}" "${!v_dyn_var2}" "${PathExist}" "${ProfileExist}"
+			 #"${ProfileExist}"
+			 
+			 			
+			v_array_string="A_CLASIF$c_a"	
+			# or just for print:  eval echo \${#$v_array_string[@]}	
+		    # Total items of  array1: ${#array[@]} ${#array[*]}
+			eval v_array_length=\${#$v_array_string[@]}
+			 
+			
+			
+			#TAG info only if selected		
+			if  [ "$V_DISPLAY_TAGS" = "Y" ] 
+				then
+				#Print info TAGS multiple array content	 
+				 for ((c_b=0;c_b<=${v_array_length-1};c_b++)) 
+				 do         
+					 #requires assign to a var and later !substitution		
+					 v_array_string="A_CLASIF$c_a[$c_b]"			 			 
+					 #echo "--Logging Value (substituted var):::  " ${!v_array_string}				 
+					if (( $c_b == 0)) || (( $c_b == 4))
+						then colpos=10
+					 else  colpos=6		
+					 fi  
+					 # tabulated print
+					 printf "%${colpos}s" ${!v_array_string}
+				 done
+				 printf "\n"
+			fi 
+		 #read -n 1 -p "Pause : Type to continue: " answer	 
+		#increase enabled counter 
+		((c_array_i=c_array_i+1))		
+		fi	
+		#END of IF display when all or ProfileExist
+	
+	done	#END of FOR c_a<=c_citems
+	
+	
+ 
 	echo "L/l) Language/Lenguaje EN/ES"
 	echo "H/h) HELP (Includes info and predefined paths)"
 	echo "X/x) Change List Mode: Full-All/Family2"
 	echo "Q/q) Quit/Exit"
+	
 	# ###### CHOICE OS VARIANTS MENU1 ######
-
-
-	read -n 1 -p "Choose an option: 1,2,3,.L,H,Q: " answer
+	
+	read -n 1 -p "Choose an option of : $mystring  or H,Q: " answer
 	echo ""
 
 	# debug mode:  
-	if [ "$V_MODEDEBUG" = "Y" ]
-	then  echo "debugging" set -x     
-	fi
+	#if [ "$V_MODEDEBUG" = "Y" ]
+	#then  echo "debugging" set -x     
+	#fi
 
+
+#if [ "$V_MODEDEBUG" = "Y" ] 
+#		then echo "chossen: "${answer} "(index):" ${!array_enabled_browsers[@]} "(values):" ${array_enabled_browsers[*]}		
+#fi		
 
 } #end Menu1
+
+
 Launcher(){
-	case $answer in
-	  1) 
-       cd  "$PATH1"
-	   pwd
-	   #./Vivaldi.app/Contents/MacOS/Vivaldi --user-data-dir="$PROFILE1" --disable-machine-id --disable-encryption --disable-update &>/dev/null &
-       ./$V_EXEC_BIN1 --user-data-dir="$PROFILE1" --disable-machine-id --disable-encryption --disable-update &>/dev/null &
-	   disown
-	   ;;
-	  2) cd  "$PATH2"
-		#cd  "$PATH2/Serpent_Mac_201910"
-		pwd
-		#space require escaping
-		#./Serpent.app/Contents/MacOS/basilisk -v
-		./"$V_EXEC_BIN2" -v
-	    #./Serpent.app/Contents/MacOS/basilisk  --no-remote --profile $PROFILE2 &>/dev/null &
-	    nohup ./"$V_EXEC_BIN2" --no-remote --profile "$PROFILE2" &>/dev/null &
-	    #disown
-	    ;; 
-	  3) cd  "$PATH3"
-		pwd
-		#space require escaping
-		#/NewMoonMac
-		#./New\ Moon.app/Contents/MacOS/palemoon -v
-		./"$V_EXEC_BIN3" -v
-		#./NewMoon.app/Contents/MacOS/palemoon -v 	
-	    #./New\ Moon.app/Contents/MacOS/palemoon --no-remote --profile $PROFILE3 &>/dev/null &
-	    nohup ./"$V_EXEC_BIN3" --no-remote --profile "$PROFILE3" &>/dev/null &
-	    ;; 
 
-	4) 
-        cd "$PATH4"
-        pwd
-        ./$V_EXEC_BIN4 -v
-		nohup ./$V_EXEC_BIN4 --no-remote --profile "$PROFILE4" &>/dev/null &        
-	    sleep 2
-	    ;; 
-
-	  5) 
-	    cd  "$PATH5"
-		pwd		
-		./$V_EXEC_BIN5 -v
-		#./Waterfox.app/Contents/MacOS/waterfox -v 		
-	    # ./Waterfox.app/Contents/MacOS/waterfox --no-remote --profile $PROFILE5 &>/dev/null &
-	    nohup ./$V_EXEC_BIN5 --no-remote --profile $PROFILE5 &>/dev/null &
-	    disown
-	    ;; 
+if [ "$V_MODEDEBUG" = "Y" ] 
+		then echo "chossen: "${answer} "(index):" ${!array_enabled_browsers[@]} "(values):" ${array_enabled_browsers[*]}			
+fi	
 
 
-	  6) 
-        cd "$PATH6"
-        pwd
-        ./$V_EXEC_BIN6 -v
-		nohup ./$V_EXEC_BIN6 --no-remote --profile $PROFILE6 &>/dev/null &
-        #cd  "$PATH5/WaterfoxClassic_linux_202002"	 
-		#pwd
-		#./waterfox-bin -v
-		#nohup ./waterfox-bin --no-remote --profile $PROFILE5 &>/dev/null &
-	    #disown -h
-	    sleep 2
-	    ;; 
-      7) 
-        cd "$PATH7"
-        pwd
-        nohup ./$V_EXEC_BIN7 -v
-		nohup ./$V_EXEC_BIN7 --no-remote --profile $PROFILE7 &>/dev/null &
-       ;;
+# If prompt has a enabled value, then translate to Configuration var suffix i.e A=10
+if [[ $mystring == *"$answer"* ]]; then
+    v_config_suffix=${array_enabled_browsers["$answer"]}
+	echo "Suffix of Choseen Browser:"  ${v_config_suffix}
+	#echo "Choseen Browser:"  ${array_enabled_browsers["$answer"]}
 
-	  9) cd  "$PATH9"
-	  #cd  "$PATH9/Firefox72Mac"
-		pwd
-		nohup ./$V_EXEC_BIN9 -v
-		nohup ./$V_EXEC_BIN9 --no-remote --profile $PROFILE9 &>/dev/null &
-		#./Firefox72Mac.app/Contents/MacOS/firefox -v 
-	    #./Firefox72Mac.app/Contents/MacOS/firefox  --no-remote --profile $PROFILE9 &>/dev/null &
-	    #disown
-	    ;; 
-	    A) 
-        cd "$PATHA"
-        pwd
-        nohup ./$V_EXEC_BINA -v
-		nohup ./$V_EXEC_BINA --no-remote --profile $PROFILEA &>/dev/null &
-       ;;
+	  #echo "It's there!"
+	v_final_var1="NAME$v_config_suffix"	
+	v_inter_var3="V_FAMILY$v_config_suffix"	
+	v_final_var3=${!v_inter_var3}	
+	v_final_var4="PATH$v_config_suffix"	
+    v_final_bin="V_EXEC_BIN$v_config_suffix"	
+	v_final_profile="PROFILE$v_config_suffix"
+	
+	
+	echo "Choseen nameBrowser:"  ${!v_final_var1}     
+	echo "family:" ${v_final_var3}  
+	
+	cd "${!v_final_var4}"	
+	pwd
+	
+	
+	#bad (("${!v_final_var3}" == "CH" ))
+	
+    #compared var requires an adittional step with var subtitution 	
+	if [ "${v_final_var3}" == "CH" ]
+	     then
+			echo " ______________Chrome______________"            			
+			./${!v_final_bin} --user-data-dir="${!v_final_profile}" --disable-machine-id --disable-encryption --disable-update &>/dev/null &
+			disown
+			#wildcard requires double braquet
+		else if [[ "${v_final_var3}" == "FF"* ]]
+				then 
+				echo " ______________Generic Firefox ______________"				
+		        ./${!v_final_bin} -v
+				nohup ./${!v_final_bin} --no-remote --profile "${!v_final_profile}" &>/dev/null &   
+				# ?? disown	
+				
+		#	else if [ "${v_final_var3}" == "FF56" ]
+		#			then  echo " ______________Firefox 56______________"	
+		#			./${!v_final_bin} -v
+		#			nohup ./${!v_final_bin} --no-remote --profile "${!v_final_profile}" &>/dev/null	&				
+		#			
+		#	else if [ "${v_final_var3}" == "FF52" ]
+		#		then  echo " ______________Firefox 52______________"	
+		#		./${!v_final_bin} -v
+		#		nohup ./${!v_final_bin} --no-remote --profile "${!v_final_profile}" &>/dev/null &					
+		
+				else echo "______________family not recognized______________"
+		#		fi
+		#	fi
+		fi
+	fi
+		
+  
+fi
 
-	  h) Help
-         Sleep 10
-         Inicio
+	  
+case "$answer" in
+	  H|h) Help                  
          ;;
-	  l) #echo "Language - "	     
-	     ChangeLanguage
-	     Menu1
+	  L|l) #echo "Language - "	     
+	     ChangeLanguage	     
 	     ;;
 
-	  q) echo "Exit/Quiting"
-	     sleep 1
+	  Q|q) echo "Exit/Quiting"
+	     sleep 0
 	     Salir;;  
-	  x) #echo "Change List Mode"
+	  X|x) #echo "Change List Mode"
 	     #sleep 1
-	     ChangeListMode_M1
-	     Menu1;;
-	  *) echo "invalid option!, going back to menu"
-	     sleep 1
-	     Inicio;;
+	     ChangeListMode_M1	     
+		 ;;
+	  *) 
+	      echo " Option $answer not recognized "	   				 
+	     ;;
 	esac
 }
 
@@ -507,14 +511,22 @@ Help()  {
 	echo "Debug 			: verbose output for testing "
 	echo "All, ListAll	: List all browsers (in 2nd Menu)"
 	echo "Family 		: List only browsers associated to profile (in 2nd Menu)"
+	
+	read -n 1 -p "Pause : Type to continue: " answerhelp
 }
 
 
 # MAIN program, call to functions
 DeclareVars
+	
+#  ------- Call to function BrowsersCOnfiguration -------
+LoadBrowserConfiguration	
+#  ------- Call to function TotalConfigItems loaded -------
+ObtainTotalConfigItems	
 while true;
 do	
 	Inicio
 	Menu1
+	#variables declared inside a previous function are not available to below functions
 	Launcher
 done
