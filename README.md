@@ -1,5 +1,8 @@
 # Menu_Launcher4multiple_FF
-A Menu launcher for all your FireFox browsers, allowing to share a common profile folder among different Firefox webbrowser (Basilisk, FF56, Waterfox, Basilisk forks) or (Palemoon, FF27, PM forks)
+It is a Menu to launch web-browsers and compatible with 2 type of Operating System (Windows and Unix/Mac) without installation.
+Besides not requiring installation, the Menu is fully portable and it help also to make all your browsers portable. 
+
+Other feature of this Menu is to allow the sharing of a common profile folder among different compatible Firefox webbrowser (Basilisk, FF56, Waterfox, Basilisk forks) or (Palemoon, FF27, PM forks). So, it is great help to allow the testing of a different webbrowser but using the same configuration than on you daily browsers.
 
 (Below screenshots are outdated, at the moment Menu is a bit better and nicer. Posix/MacOSx version is at betastage and lacks of many features)
 
@@ -13,6 +16,7 @@ This Menu solution enables you to:
 - use Firefox sync on Basilisk (using a 2018 version)
 - test a new version of a webbrowser without replacing your "stable" version
 - run a win32 fork in your older computer with WinXP but keeping your current profile
+- manage configuration through a config file and without need of programming skills (only Mac/Linux)
 
 Real and useful scenarios:
 - Do a FF sync with Basilisk2018 but keep as your main browser an updated Basilisk2019(Palemoon Sync)
