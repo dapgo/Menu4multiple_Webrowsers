@@ -10,7 +10,7 @@
 # reduce hardcoding with dynamic variables
 
 
-VERSION="1.471 Basic 20200422"
+VERSION="1.48 Basic"
 clear
 #naming the term window
 echo -n -e "\033]0;SingleMenu 4 Multiple Browsers\007"
@@ -87,8 +87,6 @@ DeclareVars()
 
 
 
-
-
 Salir()
 {
 	echo "Quit/Salir"
@@ -142,14 +140,29 @@ fi
 
 ChangeListMode_M1()
 { #ugly temp var required in DOS BATCH
-	if [ $V_VERBOSELIST = "ALL" ]
+
+  if [ $V_VERBOSELIST = "ALL" ]
    then TEMP_MODE="NO"
   fi
  if ! [ $V_VERBOSELIST = "ALL" ]
   	then TEMP_MODE="ALL"
  fi
   V_VERBOSELIST=$TEMP_MODE
+    
 }
+
+ChangeVerboseMode()
+{ #ugly temp var required in DOS BATCH
+  # TESTING 
+  if [ $V_DISPLAY_TAGS = "Y" ]
+   then TEMP_MODE="NO"
+  fi
+ if ! [ $V_DISPLAY_TAGS = "Y" ]
+  	then TEMP_MODE="Y"
+ fi
+  V_DISPLAY_TAGS=$TEMP_MODE 
+}
+
 
 DebugStart()
 {   printf "\n______________________________________________ \n"
@@ -157,12 +170,15 @@ DebugStart()
 	printf "uname: `uname` \n"
 	printf "OStype: $OSTYPE \n"	
 	bash -version |grep release
-	printf "Config file $V_CONFIGFILE \n"
-    printf "PATH_MENUBIN: $PATH_MENUBIN \n"
+	printf "______________________________________________ \n"	
+	printf "PATH_MENUBIN: $PATH_MENUBIN \n"
 	printf "PATH_ROOT_CONTENT: $PATH_ROOT_CONTENT \n"
-    printf "______________________________________________ \n"
-
-sleep 2
+    printf "______________________________________________ \n"	
+	printf "Config file $V_CONFIGFILE \n"
+	printf "Last item: $c_citems-1 Not existing: $v_array_string \n"	
+	printf "______________________________________________ \n"
+	read -n 1 -p "Pause (Debug Info) : Type to continue: " answer	 
+#sleep 1
 }
 
 LoadBrowserConfiguration()
@@ -175,7 +191,7 @@ LoadBrowserConfiguration()
 	   then	
 			source ${V_CONFIGFILE} 	
 			if [ "$V_MODEDEBUG" = "Y" ] ; then echo "File Exists and loaded: $V_CONFIGFILE "; fi		
-	   else 			
+	   else             	   
 			echo "$V_CONFIGFILE Doesnt Exist"&&exit;
 	 fi	 
 	 
@@ -190,6 +206,8 @@ ObtainTotalConfigItems()
  # Count/Detect nbr of configuration items 1..9A..C
  #  -z detect vars not defined 1=exist/set   (void =exist)
  #  -n detect a var non void value 1=void
+ 
+ #FOR until Break
  for ((c_citems=1;1==1;c_citems++)) 
  do 
    #variable with VarSuffix aka option char 
@@ -199,10 +217,11 @@ ObtainTotalConfigItems()
     	   
    #+x parameter expansion evaluates to nothing if var is unset, and substitutes the string x otherwise.
    if [ -z ${!v_array_string+x} ] ; then 
-         if [ "$V_MODEDEBUG" = "Y" ] ; then echo "Last: $c_citems-1 Not existing: $v_array_string"; fi		
+         #if [ "$V_MODEDEBUG" = "Y" ] ; then echo "Last: $c_citems-1 Not existing: $v_array_string"; fi		
+		#if unset break the FOR loop 
 		break
-	else if [ "${!v_array_string}" == ""  ] ; then 	
-				#echo	"NOK. End. Void entry on: $v_array_string"
+	else if [ "${!v_array_string}" == ""  ] ; then 					
+		#if void value break the FOR loop 
 		break				
 			# else  echo "OK, has value" ${!v_array_string} "on: $v_array_string"				
 	 fi
@@ -217,9 +236,7 @@ ObtainTotalConfigItems()
 Inicio()
 {
 
-    if [ "$V_MODEDEBUG" = "Y" ] ;	then DebugStart		
-	fi
-
+    
 	cd $PATH_MENUBIN
 	PATH_MENUBIN=$PWD
 	# root folder for browser families
@@ -259,7 +276,7 @@ Menu1(){
 	echo " |_|  |_|_____|_| \_|\___/          |_|   |___|_| \_|_____|_|   \___/_/\_\ "
 
 	printf " \n"
-	printf "_____	v $VERSION - Lang [$V_LANG] - FullList: [$V_VERBOSELIST]    ____\n"
+	printf "_____	v $VERSION - Lang [$V_LANG] - FullList: [$V_VERBOSELIST]  		  ____\n"
 	printf "_____  https://github.com/dapgo/Menu_Launcher4multiple_FF [GPL]   ____\n"
 
 
@@ -268,8 +285,13 @@ Menu1(){
 	#                SECTION1 - Root folder and PROFILE folder
 	#  ----------------------------------------------------
 	# echo ********************************************************************
-	echo "_____   	  Menu1: $V_STR_HEADER10   	 _____"
-	echo "_____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ ____"
+	printf "_____   	  Menu1: $V_STR_HEADER10   	 _____\n"
+	
+    if [ "$V_MODEDEBUG" = "Y" ] 
+		then printf "_____  Modes: Debug: $V_MODEDEBUG Verbose: $V_DISPLAY_TAGS List: $V_VERBOSELIST  _____\n"			
+    fi	
+	
+	printf "_____ _____ _____ _____ _____ _____ _____ _____ _____ _____ _____ ____\n"
 	echo ""
 	printf "$V_STR_HEADER11"
 	# to delete  echo [Option] [ BrowserName     - (Drive, folder)     ]    [Profile available Y/N]
@@ -290,8 +312,8 @@ Menu1(){
 		 v_dyn_var1="NAME$c_a"	
 		 v_dyn_var2="A_CLASIF$c_a[1]"	
 		 v_dyn_var3="PATH$c_a"	
-		 v_dyn_var4="PROFILE$c_a"	
-		 
+		 v_dyn_var4="PROFILE$c_a"							
+		 v_dyn_disabled="V_DISABLED$c_a"	
 		 
 		 #v_dyn_var3="A_CLASIF$c_a[]"	
 		 #echo "Value  (substituted var):::  " ${!v_dyn_var1}    
@@ -314,67 +336,70 @@ Menu1(){
 			fi		 
 
 
-		#Display if all or Exist		
-		#if [ "$ProfileExist" =  "[$V_STR_YES,$V_STR_YES]" ] || [ $V_VERBOSELIST = "ALL" ]
-		if [ "$PathExist" =  "Y" ] || [ $V_VERBOSELIST = "ALL" ]
-		  then
-	        #options that will work in the anwser case 
-			
-			v_opt_chrCap=${V_STR_CAPS_OPT:c_array_i:1}	
-			v_opt_chr=${V_STR_OPT:c_array_i:1}
-			
-			#associative array, defined in main			
-			array_enabled_browsers[$v_opt_chrCap]=$c_a
-			
-			if (( "$c_array_i">"8" )); then array_enabled_browsers[$v_opt_chr]=$c_a;fi	
-			
-			#delete testing  echo "all content" ${array_enabled_browsers[*]}
-			#delete testing echo "all index" ${!array_enabled_browsers[@]}
-			
-					    
-			#create string with all options for case
-			#also works [ "$c_array_i" -eq "0" ]
-			if (( "$c_array_i"=="0" )); then mystring="${v_opt_chrCap}"                         
-			   else if (( "$c_array_i"<"8" )); then mystring="${mystring}""|""${v_opt_chrCap}"
-			    else if (( "$c_array_i">"8" )); then mystring="${mystring}""|""${v_opt_chrCap}""|""${v_opt_chr}";fi
-			   fi
-			fi  
-			#create string options for case
-			
-			printf "%2s %1s %-48s %5s %3s %3s\n" "${v_opt_chrCap}" ")" "${!v_dyn_var1}" "${!v_dyn_var2}" "${PathExist}" "${ProfileExist}"
-			 #"${ProfileExist}"
-			 
-			 			
-			v_array_string="A_CLASIF$c_a"	
-			# or just for print:  eval echo \${#$v_array_string[@]}	
-		    # Total items of  array1: ${#array[@]} ${#array[*]}
-			eval v_array_length=\${#$v_array_string[@]}
-			 
-			
-			
-			#TAG info only if selected		
-			if  [ "$V_DISPLAY_TAGS" = "Y" ] 
-				then
-				#Print info TAGS multiple array content	 
-				 for ((c_b=0;c_b<=${v_array_length-1};c_b++)) 
-				 do         
-					 #requires assign to a var and later !substitution		
-					 v_array_string="A_CLASIF$c_a[$c_b]"			 			 
-					 #echo "--Logging Value (substituted var):::  " ${!v_array_string}				 
-					if (( $c_b == 0)) || (( $c_b == 4))
-						then colpos=10
-					 else  colpos=6		
-					 fi  
-					 # tabulated print
-					 printf "%${colpos}s" ${!v_array_string}
-				 done
-				 printf "\n"
-			fi 
-		 #read -n 1 -p "Pause : Type to continue: " answer	 
-		#increase enabled counter 
-		((c_array_i=c_array_i+1))		
-		fi	
-		#END of IF display when all or ProfileExist
+		
+		#Display not disabled entries, All or Existing/detected
+		# debuggin errors echo "Disabled:" ${!v_dyn_disabled}		
+		if [ "${!v_dyn_disabled}" =  "N" ];then
+			if [ "$PathExist" =  "Y" ] || [ $V_VERBOSELIST = "ALL" ]
+			  then
+				#options that will work in the anwser case 
+				
+				v_opt_chrCap=${V_STR_CAPS_OPT:c_array_i:1}	
+				v_opt_chr=${V_STR_OPT:c_array_i:1}
+				
+				#associative array, defined in main			
+				array_enabled_browsers[$v_opt_chrCap]=$c_a
+				
+				if (( "$c_array_i">"8" )); then array_enabled_browsers[$v_opt_chr]=$c_a;fi	
+				
+				#delete testing  echo "all content" ${array_enabled_browsers[*]}
+				#delete testing echo "all index" ${!array_enabled_browsers[@]}
+				
+							
+				#create string with all options for case
+				#also works [ "$c_array_i" -eq "0" ]
+				if (( "$c_array_i"=="0" )); then mystring="${v_opt_chrCap}"                         
+				   else if (( "$c_array_i"<"8" )); then mystring="${mystring}""|""${v_opt_chrCap}"
+					else if (( "$c_array_i">"8" )); then mystring="${mystring}""|""${v_opt_chrCap}""|""${v_opt_chr}";fi
+				   fi
+				fi  
+				#create string options for case
+				
+				printf "%2s %1s %-48s %5s %3s %3s\n" "${v_opt_chrCap}" ")" "${!v_dyn_var1}" "${!v_dyn_var2}" "${PathExist}" "${ProfileExist}"
+				 #"${ProfileExist}"
+				 
+							
+				v_array_string="A_CLASIF$c_a"	
+				# or just for print:  eval echo \${#$v_array_string[@]}	
+				# Total items of  array1: ${#array[@]} ${#array[*]}
+				eval v_array_length=\${#$v_array_string[@]}
+				 
+				
+				
+				#TAG info only if selected		
+				if  [ "$V_DISPLAY_TAGS" = "Y" ] 
+					then
+					#Print info TAGS multiple array content	 
+					 for ((c_b=0;c_b<=${v_array_length-1};c_b++)) 
+					 do         
+						 #requires assign to a var and later !substitution		
+						 v_array_string="A_CLASIF$c_a[$c_b]"			 			 
+						 #echo "--Logging Value (substituted var):::  " ${!v_array_string}				 
+						if (( $c_b == 0)) || (( $c_b == 4))
+							then colpos=10
+						 else  colpos=6		
+						 fi  
+						 # tabulated print
+						 printf "%${colpos}s" ${!v_array_string}
+					 done
+					 printf "\n"
+				fi 
+			 #read -n 1 -p "Pause : Type to continue: " answer	 
+			#increase enabled counter 
+			((c_array_i=c_array_i+1))		
+			fi	
+			#END of IF display when all or ProfileExist
+		fi #END of DISABLED check
 	
 	done	#END of FOR c_a<=c_citems
 	
@@ -382,7 +407,8 @@ Menu1(){
  
 	echo "L/l) Language/Lenguaje EN/ES"
 	echo "H/h) HELP (Includes info and predefined paths)"
-	echo "X/x) Change List Mode: Full-All/Family2"
+	echo "X/x) Change List Mode: Full-All/Family"
+	echo "V/v) Change Verbose Mode: Display/hide info"
 	echo "Q/q) Quit/Exit"
 	
 	# ###### CHOICE OS VARIANTS MENU1 ######
@@ -463,7 +489,11 @@ if [[ $mystring == *"$answer"* ]]; then
 		#	fi
 		fi
 	fi
-		
+	echo " **********************************************************************"
+    echo " ********     Selected WebBrowser is being launched        ************"
+	echo " ********           Please Wait a Minute                  *************"
+	echo " ***************************************************** ****************"
+	sleep 1	
   
 fi
 
@@ -482,8 +512,13 @@ case "$answer" in
 	     #sleep 1
 	     ChangeListMode_M1	     
 		 ;;
+	  V|v) #echo "Change List Mode"
+	     #sleep 1
+	     ChangeVerboseMode	     
+		 ;;
 	  *) 
-	      echo " Option $answer not recognized "	   				 
+	      echo " Option $answer not recognized "	   	
+		  sleep 1
 	     ;;
 	esac
 }
@@ -523,6 +558,7 @@ DeclareVars
 LoadBrowserConfiguration	
 #  ------- Call to function TotalConfigItems loaded -------
 ObtainTotalConfigItems	
+DebugStart  #only if parameter =yes
 while true;
 do	
 	Inicio
