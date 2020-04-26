@@ -6,6 +6,7 @@ Other feature of this Menu is to allow the sharing of a common profile folder am
 
 (Below screenshots can be outdated, at the moment Menu is a bit better and nicer. Windows batch and BashPosix Linux/MacOSx are not completely aligend, so there are some differences)
 
+ ![icon](screenshots/MenuBash_filter_tags.png)
  ![icon](screenshots/MenuFF_menu1.png)
  ![icon](screenshots/MenuFF_menu2.png)
  ![icon](screenshots/MenuFF_menu2_listAll.png)
