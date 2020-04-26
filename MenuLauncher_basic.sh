@@ -51,7 +51,8 @@ ObtainRealPath(){
 
 DeclareVars()
 {
-	V_MODEDEBUG="Y"
+   #if Menu is failing set Debug  to Y to find the cause
+	V_MODEDEBUG="N"
 	# Store the path were Menu.batch is located
 	V_CONFIGFILE=config_menu.conf.txt
 	#file containing config, paths, strings....
@@ -105,6 +106,7 @@ LoadLanguage()
 		 V_STR_HEADER21="Disponible y compat. con perfil de navegador:"
 		 V_STR_HEADER22="[Opcion] [ Navegador    Version     Desc ]        [Bin carpeta S/N]"
 		 V_STR_QUESTION1="Escoge una opcion:"
+		 V_STR_PAUSE="Pausa : Pulsa para continuar:"
 		 #due comparation when displaying PEND to fix
 		 V_STR_YES="Y"  
 		 V_STR_NO="N"
@@ -118,6 +120,7 @@ LoadLanguage()
 		 V_STR_HEADER21="Available and compat. with profile of browser:"
 		 V_STR_HEADER22="[Option] [ BrowserName  Version     Desc ]        [Bin folder Y/N]"
 		 V_STR_QUESTION1="Choose an option:"
+		 V_STR_PAUSE="Pause : Type to continue:"
 		 V_STR_YES="Y"
 		 V_STR_NO="N"
 	fi
@@ -177,7 +180,7 @@ DebugStart()
 	printf "Config file $V_CONFIGFILE \n"
 	printf "Last item: $c_citems-1 Not existing: $v_array_string \n"	
 	printf "______________________________________________ \n"
-	read -n 1 -p "Pause (Debug Info) : Type to continue: " answer	 
+	read -n 1 -p ${V_STR_PAUSE} kcontinue	 
 #sleep 1
 }
 
@@ -394,7 +397,7 @@ Menu1(){
 					 done
 					 printf "\n"
 				fi 
-			 #read -n 1 -p "Pause : Type to continue: " answer	 
+			 #read -n 1 -p ${V_STR_PAUSE} kcontinue
 			#increase enabled counter 
 			((c_array_i=c_array_i+1))		
 			fi	
@@ -413,7 +416,7 @@ Menu1(){
 	
 	# ###### CHOICE OS VARIANTS MENU1 ######
 	
-	read -n 1 -p "Choose an option of : $mystring  or H,Q: " answer
+	read -n 1 -p "$V_STR_QUESTION1 from $mystring  or H,Q: " answer
 	echo ""
 
 	# debug mode:  
@@ -493,12 +496,13 @@ if [[ $mystring == *"$answer"* ]]; then
     echo " ********     Selected WebBrowser is being launched        ************"
 	echo " ********           Please Wait a Minute                  *************"
 	echo " ***************************************************** ****************"
-	sleep 1	
+	read -n 1 -p "$V_STR_PAUSE" kcontinue
+	#sleep 2
   
-fi
-
-	  
-case "$answer" in
+  else
+   echo "else   $answer"
+   case "$answer" in
+   
 	  H|h) Help                  
          ;;
 	  L|l) #echo "Language - "	     
@@ -520,7 +524,11 @@ case "$answer" in
 	      echo " Option $answer not recognized "	   	
 		  sleep 1
 	     ;;
-	esac
+	esac   
+  
+  
+  fi #end of IF mystring == $answer"	  
+
 }
 
 
@@ -547,7 +555,7 @@ Help()  {
 	echo "All, ListAll	: List all browsers (in 2nd Menu)"
 	echo "Family 		: List only browsers associated to profile (in 2nd Menu)"
 	
-	read -n 1 -p "Pause : Type to continue: " answerhelp
+	read -n 1 -p "$V_STR_PAUSE" kcontinue
 }
 
 
@@ -558,7 +566,8 @@ DeclareVars
 LoadBrowserConfiguration	
 #  ------- Call to function TotalConfigItems loaded -------
 ObtainTotalConfigItems	
-DebugStart  #only if parameter =yes
+if [ "$V_MODEDEBUG" = "Y" ] ; then DebugStart ; fi		
+
 while true;
 do	
 	Inicio

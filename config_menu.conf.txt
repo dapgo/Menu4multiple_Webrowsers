@@ -1,4 +1,5 @@
 #!/bin/bash
+# Example of Config file, modify entries for you config, remove example entries
 # avoid creation on Windows(CR LF) or transform to UNIX(LF)
 # error line x: $'\r': command not found
 # npp, Edit EOL Conversion,UNIX(LF)
@@ -8,10 +9,11 @@
 # https://github.com/dapgo/Menu_Launcher4multiple_FF
 #PEND remove logic from file and add in a loop in the menu
 # COnfig file
+
  #GLOBAL, overwrite var declaration on main script
- V_MODEDEBUG="Y"
+ #if Menu is failing set Debug  to Y to find the cause
+ V_MODEDEBUG="N"
  V_LANG="EN"
- V_DISPLAY_TAGS="Y"
  #ALL 1st screen list all browser even if not installed
  V_VERBOSELIST="N"
 
@@ -19,7 +21,7 @@
  V_STR_YES="Y"
 V_STR_NO="N"
 
-#Possible Options on MENU (except reserved h,x,l,q)
+#Possible Options on MENU (EXCEPT reserved H/h,x/X,l/L,q/Q,v/V)
 #Caps and noCaps must be equivalent in length and order
 V_STR_OPT="123456789abcdefgijkmnoprst"
 V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
@@ -39,7 +41,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	 V_EXEC_BIN1="Vivaldi"
 	 V_FAMILY1="CH"
 	 A_CLASIF1=("CH79" "MAC" "64b" "apple")
-	
+	 V_DISABLED1="N"
 
 	NAME2="Basilisk /Serpent2019 ( ./BasiliskBrowsers)"
 	PATH2="$PATH_ROOT_CONTENT/BasiliskBrowsers/Serpent_Mac_201910"
@@ -47,7 +49,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
        V_EXEC_BIN2="Serpent.app/Contents/MacOS/basilisk" 
 	V_FAMILY2="FF52"
 	A_CLASIF2=("FF52" "MAC" "64b" "apple")
-	
+	V_DISABLED2="N"
 
 	NAME3="Palemoon /NewMoon 28.8.0 ( ./PalemoonBrowsers)"
 	PATH3="$PATH_ROOT_CONTENT/PalemoonBrowsers/NewMoonMac"
@@ -55,7 +57,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	V_EXEC_BIN3="New Moon.app/Contents/MacOS/palemoon"
 	V_FAMILY3="FF27"
 	A_CLASIF3=("FF27" "MAC" "64b" "apple")
-	
+	V_DISABLED3="N"
 
 	NAME4="Palemoon  28.8.0 ( /usr/lib/palemoon/)"
 	#PATH4="$PATH_ROOT_CONTENT/PalemoonBrowsers"
@@ -65,7 +67,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	V_EXEC_BIN4="palemoon"
 	V_FAMILY4="FF27"
 	A_CLASIF4=("FF27" "NIX" "64b" "Inst")
-	
+	V_DISABLED4="N"
 
 	 NAME5="WaterfoxClassic 202001 ( ./Waterfox_browsers)"
 	# PATH5="$PATH_ROOT_CONTENT/Waterfox_browsers/WaterfoxClassic_Mac_202001/Waterfox.app/Contents/MacOS"
@@ -75,6 +77,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	 V_EXEC_BIN5="waterfox"
 	 V_FAMILY5="FF56"
 	 A_CLASIF5=("FF56" "MAC" "64b")
+	 V_DISABLED5="N"
 	 
 	NAME6="WaterfoxClassic 202001 ( ./Waterfox_browsers)"	 
 	PATH6="$PATH_ROOT_CONTENT/Waterfox_browsers/WaterfoxClassic_linux_202002"
@@ -82,7 +85,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	V_EXEC_BIN6="waterfox-bin"	 		
 	V_FAMILY6="FF56"
 	A_CLASIF6=("FF56" "NIX" "64b" "Tar")
-	
+	V_DISABLED6="N"
 
 	NAME7="Basilisk /Serpent 202002 ( ./BasiliskBrowsers)"
 	PATH7="$PATH_ROOT_CONTENT/BasiliskBrowsers/basilisk_nix_202002"
@@ -90,7 +93,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	V_EXEC_BIN7="basilisk-bin" 		
 	V_FAMILY7="FF52"
 	A_CLASIF7=("FF52" "NIX" "64b" "Tar")
-	
+	V_DISABLED7="N"
 
 	 NAME8="BrowserName!!!!! Version ( ./familyfolder)"
 	 PATH8="$PATH_ROOT_CONTENT/familyfolder/BrowserNameVer"
@@ -98,7 +101,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	 V_EXEC_BIN8="browserbundle.app/Contents/MacOS/binary" 
 	 V_FAMILY8="FF57"
 	 A_CLASIF8=("FF57" "MAC" "64b" "apple")
-	
+	V_DISABLED8="Y"
 	
 	
 	 NAME9="FirefoxQuantum 70.x ( ./QuantumBrowsers)"
@@ -107,7 +110,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	 V_EXEC_BIN9="Firefox72Mac.app/Contents/MacOS/firefox" 
 	 V_FAMILY9="FF57"
 	 A_CLASIF9=("FF57" "MAC" "64b" "apple")
-	
+	 V_DISABLED9="N"
     
     NAME10="GNU IceCat/Iceweasel 60.7 ( ./icecat60)"
 	PATH10="$PATH_ROOT_CONTENT/icecat60.7_nix86_64b"
@@ -115,7 +118,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	V_EXEC_BIN10="icecat-bin" 
 	V_FAMILY10="FF56"
 	 A_CLASIF10=("FF57" "NIX" "64b" "Tar")
-	
+	V_DISABLED10="N"
 	
     NAME11="Firefox 72 ( ./QuantumBrowsers)"
 	PATH11="$PATH_ROOT_CONTENT/QuantumBrowsers"
@@ -124,7 +127,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	V_EXEC_BIN11="Firefox-x86_64-20200118153954.AppImage" 
 	V_FAMILY11="FF60"
 	A_CLASIF11=("FF60" "NIX" "64b" "AppImg")
-	
+	V_DISABLED11="N"
 
 	NAME12="WF current 202003 ( ./FF68Browsers)"
 	#espce removed from name to avoid error
@@ -133,7 +136,7 @@ V_STR_CAPS_OPT="123456789ABCDEFGIJKMNOPRST"
 	V_EXEC_BIN12="waterfox" 
 	V_FAMILY12="FF68"
 	A_CLASIF12=("FF68" "MAC" "64b" "AppImg" "USB")
-	 
+	V_DISABLED12="N"
 
 	
 	# Browsers arguments

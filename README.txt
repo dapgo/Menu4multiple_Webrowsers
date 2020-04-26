@@ -45,12 +45,18 @@ LICENSE
 	
 	
 LINUX/MACOS NOTES
-file.sh  requires to be executable, so you have to use the command
+file.sh  requires to be executable, so you have to use the command chmod to change permissions
 
+*Make executable
 Unzip file in a folder (i.e /users/Ana/Documents)
 open terminal app (Applications/Utilities)
 cd folder (i.e /users/Ana/Documents)
 chmod +x file.sh
 
-./file.sh (from terminal)
-double click on file.sh (from the folder in Finder)
+*Executing the Menu:
+double click on Menu.sh (from the folder in Finder)
+./Menu.sh (from terminal)
+sh Menu.sh (from terminal)
+
+
+
