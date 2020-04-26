@@ -8,7 +8,9 @@ Other feature of this Menu is to allow the sharing of a common profile folder am
 
 Screenshot: Menu for Linux/macOS
  ![icon](screenshots/MenuBash_filter_tags.png)
+ 
 Screenshot: Menu for Windows OS
+
  ![icon](screenshots/MenuFF_menu1.png)
  ![icon](screenshots/MenuFF_menu2.png)
  ![icon](screenshots/MenuFF_menu2_listAll.png)
