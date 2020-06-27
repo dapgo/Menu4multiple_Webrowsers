@@ -1,10 +1,11 @@
-# Menu_Launcher4multiple_FF
+# Menu_Launcher4multiple_WebBrowsers
 It is a Menu to launch web-browsers and compatible with 2 type of Operating System (Windows and Unix/Mac) without installation.
 Besides not requiring installation, the Menu is fully portable and it help also to make all your browsers portable. 
 
-[DOWNLOAD FROM RELEASES SECTION](https://github.com/dapgo/Menu4multiple_Webrowsers/releases)
+[DOWNLOAD YOUR MENU VERSION FROM RELEASES SECTION](https://github.com/dapgo/Menu4multiple_Webrowsers/releases)
 
-Other feature of this Menu is to allow the sharing of a common profile folder among different compatible Firefox webbrowser (Basilisk, FF56, Waterfox, Basilisk forks) or (Palemoon, FF27, PM forks). So, it is great help to allow the testing of a different webbrowser but using the same configuration than on you daily browsers.
+Other feature of this Menu is to allow the sharing of a common profile folder among different compatible Browsers x webbrowser Firefox56(Basilisk, Waterfox, Basilisk forks) ,Firefox27 (Palemoon, FF27, PM forks) or Chrome (Chrome, Chromium, Vivaldi, Brave,..). 
+Menu is useful to allow the testing of a different webbrowser but using the same configuration than on you daily browsers.
 
 (Below screenshots can be outdated, at the moment Menu is a bit better and nicer. Windows batch and BashPosix Linux/MacOSx are not completely aligend, so there are some differences)
 
