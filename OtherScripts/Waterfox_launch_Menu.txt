@@ -1,0 +1,15 @@
+Instructions - STEPS by STEP
+
+
+1- Download waterfox file (i.e Waterfox Classic 202109)
+
+2- Open the file with compressor app (such as 7zip)
+2.1-  Extract/Unzip "core" folder to an specific folder 
+2.2-  Memorize the extraction path
+3- Go to the previous path and rename the "core" folder to "WaterfoxClassic202109".
+
+4- Download an executable batch menu 
+5- Edit/Open the WF_menu with notepad and add the previous extraction path
+6- Execute/doubleclick on WF_menu batch file
+7- Choose and option and Waterfox should open
+
